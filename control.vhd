@@ -41,27 +41,57 @@ entity control is
     alu_op : out std_logic_vector(1 downto 0);
     mem_write : out std_logic;
     alu_src : out std_logic;
-    reg_write : out std_logic;
+    reg_write : out std_logic
+	 );
 
-    end control;
+end control;
 
     architecture Behavioral of control is
+		signal opcode : std_logic_vector(5 downto 0);
 
-        begin
-              case instruction_in(31 downto 28) use
-                    when "0000" =>
-                  case instruction_in(27 downto 27) use
-                        when '1' => null;
-              when '0' => null;
-              when others => null;
-            end case;
-              when  => ;
-              when others => null;
-            end case;
-              when "0100" => null; --
-              when others => null;
-            end case;
+		
+    begin
+		
+	 
+	 
+		opcode <= instruction_in(31 downto 26);
+	   
+		process(instruction_in) is begin
+				regdst <= '0';
+				branch <= '0';
+				mem_read <= '0';
+				mem_to_reg <= '0';
+				alu_op <= "00";
+				mem_write <= '0';
+				alu_src <= '0';
+				reg_write <= '0';
+				
+			if opcode = "000000" then -- R execution
+				regdst <= '1';
+				alu_op <= "10";
+				reg_write <= '1';
+			elsif opcode = "000010" or opcode = "000011" then -- J execution
+				branch <= '1';
+				alu_op <= "01";
+			elsif opcode = "100011" then -- LOAD execution
+				mem_to_reg <= '1';
+				reg_write <= '1';
+				mem_read <= '1';
+				alu_src <= '1';
+			elsif opcode = "101011" then -- STORE execution
+				reg_write <= '1';
+				alu_src <= '1';
+			elsif opcode = "000100" then -- BRANCH execution
+				branch <= '1';
+				alu_op <= "01";
+			elsif opcode = "001111" then -- LUI execution
+				reg_write <= '1';
+				alu_src <= '1';
+				alu_op <= "11";
+			end if;
+		
+		end process;
+		
 
-
-            end Behavioral;
+    end Behavioral;
 
