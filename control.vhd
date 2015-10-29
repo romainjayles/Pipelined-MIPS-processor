@@ -31,8 +31,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity control is
   port(
-    clk, reset : in std_logic;
-    processor_enable : in std_logic;
     instruction_in : in std_logic_vector(31 downto 0);
     regdst : out std_logic;
     branch : out std_logic;
@@ -56,7 +54,7 @@ end control;
 	 
 		opcode <= instruction_in(31 downto 26);
 	   
-		process(instruction_in) is begin
+		process(opcode) is begin
 				regdst <= '0';
 				branch <= '0';
 				mem_read <= '0';
@@ -71,7 +69,7 @@ end control;
 				alu_op <= "10";
 				reg_write <= '1';
 			elsif opcode = "000010" or opcode = "000011" then -- J execution
-				branch <= '1';
+				branch <= '0';
 				alu_op <= "01";
 			elsif opcode = "100011" then -- LOAD execution
 				mem_to_reg <= '1';
@@ -79,8 +77,8 @@ end control;
 				mem_read <= '1';
 				alu_src <= '1';
 			elsif opcode = "101011" then -- STORE execution
-				reg_write <= '1';
 				alu_src <= '1';
+				mem_write <= '1';
 			elsif opcode = "000100" then -- BRANCH execution
 				branch <= '1';
 				alu_op <= "01";
