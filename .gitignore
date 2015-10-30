@@ -1,0 +1,8 @@
+*.prj
+*~
+*.xst
+/isim
+*.log
+*.cmd
+*.stx
+*.lso
