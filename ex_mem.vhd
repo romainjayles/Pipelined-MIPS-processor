@@ -42,6 +42,7 @@ entity ex_mem is
            alu_result : in  STD_LOGIC_VECTOR(31 downto 0);
            operand_b : in  STD_LOGIC_VECTOR(31 downto 0);
            write_reg : in  STD_LOGIC_VECTOR(4 downto 0);
+			  pc_src: in STD_LOGIC;
 			  -- out register --------------
            out_reg_write_control : out  STD_LOGIC;
            out_branch_control : out  STD_LOGIC;
@@ -50,7 +51,8 @@ entity ex_mem is
            out_zero : out  STD_LOGIC;
            out_alu_result : out  STD_LOGIC_VECTOR(31 downto 0);
            out_operand_b : out  STD_LOGIC_VECTOR(31 downto 0);
-           out_write_reg : out  STD_LOGIC_VECTOR(4 downto 0)
+           out_write_reg : out  STD_LOGIC_VECTOR(4 downto 0);
+			  out_pc_src: out STD_LOGIC
 			 );
 end ex_mem;
 
