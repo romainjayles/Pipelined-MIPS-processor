@@ -36,7 +36,7 @@ entity mem_wb is
            pc_src : in  STD_LOGIC;
            read_data : in  STD_LOGIC_VECTOR(31 downto 0);
            alu_result : in  STD_LOGIC_VECTOR(31 downto 0);
-           write_reg : in  STD_LOGIC_VECTOR(4 downto 0)
+           write_reg : in  STD_LOGIC_VECTOR(4 downto 0);
 			  
 			  out_pc_src : in  STD_LOGIC;
            out_read_data : in  STD_LOGIC_VECTOR(31 downto 0);
