@@ -43,6 +43,7 @@ entity ex_mem is
            alu_result : in  STD_LOGIC_VECTOR(31 downto 0);
            operand_b : in  STD_LOGIC_VECTOR(31 downto 0);
            write_reg : in  STD_LOGIC_VECTOR(4 downto 0);
+			  mem_to_reg_control : in STD_LOGIC;
 
 			  -- out register --------------
            out_reg_write_control : out  STD_LOGIC;
@@ -53,7 +54,8 @@ entity ex_mem is
            out_zero : out  STD_LOGIC;
            out_alu_result : out  STD_LOGIC_VECTOR(31 downto 0);
            out_operand_b : out  STD_LOGIC_VECTOR(31 downto 0);
-           out_write_reg : out  STD_LOGIC_VECTOR(4 downto 0)
+           out_write_reg : out  STD_LOGIC_VECTOR(4 downto 0);
+			  out_mem_to_reg_control : out STD_LOGIC
 			 );
 end ex_mem;
 
@@ -72,6 +74,7 @@ begin
 			out_alu_result <= (others => '0');
 			out_operand_b <= (others => '0');
 			out_write_reg <= (others => '0');
+			out_mem_to_reg_control <= '0';
 		elsif rising_edge(clk) then
 			out_reg_write_control <= reg_write_control;
 			out_branch_control <= branch_control;
@@ -82,6 +85,7 @@ begin
 			out_alu_result <= alu_result;
 			out_operand_b <= operand_b;
 			out_write_reg <= write_reg;
+			out_mem_to_reg_control <= mem_to_reg_control;
 		end if;
 	end process;
 

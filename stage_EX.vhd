@@ -47,6 +47,7 @@ entity stage_EX is
            in_alu_src_control : in  STD_LOGIC;
 			  in_immediate : in STD_LOGIC_VECTOR(31 downto 0);
 			  in_reg_write_control : in  STD_LOGIC;
+			  in_mem_to_reg_control : in STD_LOGIC;
 			  
 			  out_pc_imm_offcet : out STD_LOGIC_VECTOR(31 downto 0);
 			  --out_pc_src_control : out STD_LOGIC;
@@ -57,7 +58,8 @@ entity stage_EX is
 			  out_reg_b : out STD_LOGIC_VECTOR(31 downto 0);
 			  out_write_reg : out STD_LOGIC_VECTOR(4 downto 0);
 			  out_alu_zero : out STD_LOGIC;
-			  out_reg_write_control : out  STD_LOGIC
+			  out_reg_write_control : out  STD_LOGIC;
+			  out_mem_to_reg_control : out STD_LOGIC
 			  
 			  );
 			  
@@ -112,6 +114,7 @@ MIPSalu : entity work.alu(Behavioral)
            alu_result => alu_result,
            operand_b => in_reg_b,
            write_reg => write_reg,
+			  mem_to_reg_control => in_mem_to_reg_control,
 			  -- out register --------------
            out_reg_write_control => out_reg_write_control,
            out_branch_control => out_branch_control,
@@ -121,7 +124,8 @@ MIPSalu : entity work.alu(Behavioral)
            out_zero => out_alu_zero,
            out_alu_result => out_alu_result,
            out_operand_b => out_reg_b,
-           out_write_reg => out_write_reg
+           out_write_reg => out_write_reg,
+			  out_mem_to_reg_control => out_mem_to_reg_control
       );	
 -- alu and alu control connection	
 	operand_B <= in_reg_b when (in_alu_src_control = '0') else in_immediate;
