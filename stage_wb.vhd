@@ -44,16 +44,16 @@ entity stage_wb is
 			  in_reg_write_control : in STD_LOGIC;
 			  in_mem_to_reg_control : in STD_LOGIC;
 			  
-			  procDMemReadData	:  in std_logic_vector(31 downto 0);
+			  in_procDMemReadData	:  in std_logic_vector(31 downto 0);
 			  
 			  out_pc_src_control : out STD_LOGIC;
 			  --out_mem_to_reg_control : out STD_LOGIC;
 			  out_write_data : out STD_LOGIC_VECTOR(31 downto 0);
 			  out_write_reg : out STD_LOGIC_VECTOR(4 downto 0);
 			  
-			  procDMemWriteEnable : out std_logic;
-			  procDMemWriteData		: out std_logic_vector(31 downto 0);
-			  procDMemAddr				: out std_logic_vector(7 downto 0)
+			  out_procDMemWriteEnable : out std_logic;
+			  out_procDMemWriteData		: out std_logic_vector(31 downto 0);
+			  out_procDMemAddr				: out std_logic_vector(7 downto 0)
 	 );
 end stage_wb;
 
@@ -69,7 +69,7 @@ begin
 			  reset => reset,
 			  clk => clk,
 			  pc_src => pc_src,
-           read_data =>  procDMemReadData,
+           read_data =>  in_procDMemReadData,
            alu_result => in_alu_result,
            write_reg  => in_write_reg,
 			  
@@ -81,8 +81,9 @@ begin
 	
 	
 	out_write_data <= read_data when (in_mem_to_reg_control = '0') else alu_result;
-	procDMemWriteEnable <= '1' when (in_mem_write_control = '1') else
+	out_procDMemWriteEnable <= '1' when (in_mem_write_control = '1') else
 								  '0' when (in_mem_read_control = '1');
 	pc_src <= in_branch_control AND in_alu_zero;
+	out_procDMemAddr <= alu_result;
 end Behavioral;
 

@@ -31,7 +31,104 @@ end MIPSProcessor;
 
 architecture DummyArch of MIPSProcessor is
 	signal counterReg : unsigned(31 downto 0);
+	
+	-- execute stage (use only inputs, outputs go into wb stage - i connect them myself, Stefan)
+	---inputs
+	signal in_pc :  STD_LOGIC_VECTOR(31 downto 0);
+   signal in_reg_a :  STD_LOGIC_VECTOR(31 downto 0);
+   signal in_reg_b :  STD_LOGIC_VECTOR(31 downto 0);
+   signal in_instruction20_16 :  STD_LOGIC_VECTOR(4 downto 0);
+   signal in_instruction15_11 :  STD_LOGIC_VECTOR(4 downto 0);
+   signal in_reg_dst_control :  STD_LOGIC;
+   signal in_branch_control :  STD_LOGIC;
+	signal in_mem_read_control :  STD_LOGIC; -- as data memory has only one signal writeEnable
+	signal in_mem_write_control:  STD_LOGIC;-- the following is performed: if mem_write_control = '1' then writeEnable = '1' 
+														-- else if mem_read_control= '1' writeEnable = '0'
+   signal in_alu_op_control :   STD_LOGIC_VECTOR(1 downto 0);
+   signal in_alu_src_control :   STD_LOGIC;
+	signal in_immediate :  STD_LOGIC_VECTOR(31 downto 0);
+	signal in_reg_write_control :   STD_LOGIC;
+	signal in_mem_to_reg_control :  STD_LOGIC;
+	---- end inputs
+	--- outputs
+	signal out_pc_imm_offcet :  STD_LOGIC_VECTOR(31 downto 0);
+	signal out_branch_control :  STD_LOGIC;
+	signal out_mem_read_control :  STD_LOGIC;
+	signal out_mem_write_control:  STD_LOGIC;
+	signal out_alu_result :  STD_LOGIC_VECTOR(31 downto 0);
+	signal out_reg_b :  STD_LOGIC_VECTOR(31 downto 0);
+	signal out_write_reg :  STD_LOGIC_VECTOR(4 downto 0);
+	signal out_alu_zero :  STD_LOGIC;
+	signal out_reg_write_control :   STD_LOGIC;
+	signal out_mem_to_reg_control :  STD_LOGIC;
+ ---- end	
+ 
+	-- outputs of write back pipeline stage
+	signal wb_out_pc_src_control : STD_LOGIC;
+	signal wb_out_write_data : STD_LOGIC_VECTOR(31 downto 0);
+	signal wb_out_write_reg :  STD_LOGIC_VECTOR(4 downto 0);
+			  
+	----end
 begin
+
+	-- instantiate execution pipeline stage
+	MIPSstage_EX : entity work.stage_EX(Behavioral)
+    port map (
+			  clk => clk,
+           reset => reset,
+           in_pc => in_pc,
+           in_reg_a => in_reg_a,
+           in_reg_b => in_reg_b,
+           in_instruction20_16 => in_instruction20_16,
+           in_instruction15_11 => in_instruction15_11,
+           in_reg_dst_control => in_reg_dst_control,
+           in_branch_control => in_branch_control,
+			  in_mem_read_control => in_mem_read_control,
+			  in_mem_write_control => in_mem_write_control,
+           in_alu_op_control => in_alu_op_control,
+           in_alu_src_control => in_alu_src_control,
+			  in_immediate => in_immediate,
+			  in_reg_write_control => in_reg_write_control,
+			  in_mem_to_reg_control => in_mem_to_reg_control,
+			  
+			  out_pc_imm_offcet => out_pc_imm_offcet,
+			  out_branch_control => out_branch_control,
+			  out_mem_read_control => out_mem_read_control,
+			  out_mem_write_control => out_mem_write_control,
+			  out_alu_result => out_alu_result,
+			  out_reg_b => out_reg_b,
+			  out_write_reg => out_write_reg,
+			  out_alu_zero => out_alu_zero,
+			  out_reg_write_control => out_reg_write_control,
+			  out_mem_to_reg_control => out_mem_to_reg_control
+	 );
+	 
+	 -- instantiate write back pipeline stage
+	MIPSstage_wb : entity work.stage_wb(Behavioral)
+    port map (
+			  reset => reset,
+			  clk => clk,
+			  in_pc_imm_offcet => out_pc_imm_offcet,
+			  in_branch_control => out_branch_control,
+			  in_mem_read_control => out_mem_read_control,
+			  in_mem_write_control => out_mem_write_control,
+			  in_alu_result => out_alu_result,
+			  in_reg_b => out_reg_b,
+			  in_write_reg => out_write_reg,
+			  in_alu_zero => out_alu_zero,
+			  in_reg_write_control => out_reg_write_control,
+			  in_mem_to_reg_control => out_mem_to_reg_control,
+			  
+			  in_procDMemReadData	=> dmem_data_in,
+			  
+			  out_pc_src_control => wb_out_pc_src_control,
+			  out_write_data => wb_out_write_data,
+			  out_write_reg => wb_out_write_reg,
+			  
+			  out_procDMemWriteEnable => dmem_write_enable,
+			  out_procDMemWriteData		=> dmem_data_out,
+			  out_procDMemAddr	=> dmem_address
+	);
 
 	DummyProc: process(clk, reset)
 	begin
