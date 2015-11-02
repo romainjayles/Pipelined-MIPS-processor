@@ -42,7 +42,9 @@ Port (
 	 pc_enable        : in  std_logic;
 	 instruction_out  : out std_logic_vector(31 downto 0);
     imem_data_in     : in  std_logic_vector(31 downto 0);
-    imem_address     : out std_logic_vector(31 downto 0));
+    imem_address     : out std_logic_vector(31 downto 0);
+	 pc_out        : out  std_logic_vector(31 downto 0)
+	 );
 
 end IF_stage;
 
@@ -58,7 +60,8 @@ architecture Behavioral of IF_stage is
 	signal current_instruction : std_logic_vector(31 downto 0);
 
 begin
-
+	
+	pc_out <= increment_PC;
 
 -- The mux
   with PCsrc select
