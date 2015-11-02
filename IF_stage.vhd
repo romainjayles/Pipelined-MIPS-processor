@@ -42,7 +42,7 @@ Port (
 	 pc_enable        : in  std_logic;
 	 instruction_out  : out std_logic_vector(31 downto 0);
     imem_data_in     : in  std_logic_vector(31 downto 0);
-    imem_address     : out std_logic_vector(31 downto 0);
+    imem_address     : out std_logic_vector(7 downto 0);
 	 pc_out        : out  std_logic_vector(31 downto 0)
 	 );
 
@@ -71,7 +71,7 @@ begin
 
 	-- PC 
 	 increment_PC        <= std_logic_vector(unsigned(PC) + 1);  -- PC +1
-	imem_address        <= PC;            -- The address of the instruction will
+	imem_address        <= PC(7 downto 0);            -- The address of the instruction will
 													  -- be in PC
 	
 	-- instruction --

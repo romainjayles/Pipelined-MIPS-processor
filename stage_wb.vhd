@@ -84,6 +84,6 @@ begin
 	out_procDMemWriteEnable <= '1' when (in_mem_write_control = '1') else
 								  '0' when (in_mem_read_control = '1');
 	pc_src <= in_branch_control AND in_alu_zero;
-	out_procDMemAddr <= alu_result;
+	out_procDMemAddr <= alu_result(7 downto 0);
 end Behavioral;
 
