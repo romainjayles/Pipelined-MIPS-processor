@@ -56,7 +56,7 @@ begin
                       a_extended or b_extended  when (control = b"0001")                               else  -- OR
                       lui_shift                 when (control = b"1111")                               else  ---LUI
                       to_signed(1, 32)          when (control = b"0111") and (a_extended < b_extended) else  -- SLT
-                      to_signed(0, 32)          when (control = b"0111") and (a_extended >= b_extended);  -- SLT
+                      to_signed(0, 32)          when (control = b"0111") and (a_extended >= b_extended) else X"00000000";  -- SLT
 
   zero   <= '1' when (result_extended = to_signed(0, 32)) else '0';
   result <= std_logic_vector(result_extended(31 downto 0));
