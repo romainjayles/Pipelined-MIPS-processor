@@ -277,10 +277,10 @@ begin
 		end if;
 	end process;
 	
-	dmem_write_enable <= processor_enable;
-	imem_address <= (others => '0');
-	dmem_address <= std_logic_vector(counterReg(7 downto 0));
-	dmem_data_out <= std_logic_vector(counterReg);
+	--dmem_write_enable <= processor_enable;
+	--imem_address <= (others => '0');
+	--dmem_address <= std_logic_vector(counterReg(7 downto 0));
+	--dmem_data_out <= std_logic_vector(counterReg);
 
 end DummyArch;
 
