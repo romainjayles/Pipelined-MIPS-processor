@@ -37,11 +37,14 @@ entity mem_wb is
            read_data : in  STD_LOGIC_VECTOR(31 downto 0);
            --alu_result : in  STD_LOGIC_VECTOR(31 downto 0);
            write_reg : in  STD_LOGIC_VECTOR(4 downto 0);
+			  in_reg_write_control : in STD_LOGIC;
+			  
 			  
 			  out_pc_src : out  STD_LOGIC;
            out_read_data : out  STD_LOGIC_VECTOR(31 downto 0);
            out_alu_result : out  STD_LOGIC_VECTOR(31 downto 0);
-           out_write_reg : out  STD_LOGIC_VECTOR(4 downto 0)
+           out_write_reg : out  STD_LOGIC_VECTOR(4 downto 0);
+			  out_reg_write_control : out STD_LOGIC
 			  );
 end mem_wb;
 
@@ -55,10 +58,12 @@ begin
 			out_read_data <= (others => '0');
 			--out_alu_result <= (others => '0');
 			out_write_reg <= (others => '0');
+			out_reg_write_control <= '0';
 		elsif rising_edge(clk) then
 			out_pc_src <= pc_src;
 			out_read_data <= read_data;
 			--out_alu_result <= alu_result;
+			out_reg_write_control <= in_reg_write_control;
 			out_write_reg <= write_reg;
 		end if;
 	end process;
