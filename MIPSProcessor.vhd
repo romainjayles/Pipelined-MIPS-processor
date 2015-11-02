@@ -29,7 +29,7 @@ entity MIPSProcessor is
 	);
 end MIPSProcessor;
 
-architecture DummyArch of MIPSProcessor is
+architecture Behavioral of MIPSProcessor is
 	signal counterReg : unsigned(31 downto 0);
 	
 	 signal reg_write : std_logic;
@@ -116,13 +116,13 @@ begin
     port map (
 			reset => reset,
 			clk => clk,
-			processor_enable => if_in_processor_enable,
-			PCsrc	=> if_in_PCsrc,			
-			PCbranch	=>	if_in_PCbranch,	
+			processor_enable => processor_enable,
+			PCsrc	=> wb_out_pc_src_control,			
+			PCbranch	=>	out_pc_imm_offcet,	
 			pc_enable => if_in_pc_enable,     
 			instruction_out => if_out_instruction_out,
-			imem_data_in => if_in_imem_data_in,  
-			imem_address =>  if_out_imem_address,
+			imem_data_in => imem_data_in,  
+			imem_address => imem_address,
 			pc_out => if_out_pc
 
 	);
@@ -277,10 +277,11 @@ begin
 		end if;
 	end process;
 	
+	if_in_pc_enable <= '1';
 	--dmem_write_enable <= processor_enable;
 	--imem_address <= (others => '0');
 	--dmem_address <= std_logic_vector(counterReg(7 downto 0));
 	--dmem_data_out <= std_logic_vector(counterReg);
 
-end DummyArch;
+end Behavioral;
 
