@@ -89,7 +89,61 @@ architecture DummyArch of MIPSProcessor is
    signal alu_src : std_logic;
 			  
 	----end
+	
+	-- instruction fetch stage  inputs
+	---inputs
+	signal if_in_processor_enable : std_logic;
+	signal if_in_PCsrc : std_logic;
+	signal if_in_PCbranch : std_logic_vector(31 downto 0);
+	signal if_in_pc_enable : std_logic;
+	signal if_in_imem_data_in : std_logic_vector(31 downto 0);
+	-- end inputs
+	
+	-- instruction fetch stage  outputs
+	---outputs
+	signal if_out_instruction_out : std_logic_vector(31 downto 0);
+	signal if_out_imem_address : std_logic_vector(31 downto 0);
+	signal if_out_pc : std_logic_vector(31 downto 0);
+	-- end outputs
+	
+	-- register IF_ID
+	--inputs  -- the outputs of fetch stage
+	--end inputs
+	signal reg_if_id_instruction_out : std_logic_vector(31 downto 0);
+	signal reg_if_id_pc_out : std_logic_vector(31 downto 0);
+	
+	
 begin
+
+	 -- instantiate instruction fetch pipeline stage
+	MIPSstage_if : entity work.stage_if(Behavioral)
+    port map (
+			reset => reset,
+			clk => clk,
+			processor_enable => if_in_processor_enable,
+			PCsrc	=> if_in_PCsrc,			
+			PCbranch	=>	if_in_PCbranch,	
+			pc_enable => if_in_pc_enable,     
+			instruction_out => if_out_instruction_out,
+			imem_data_in => if_in_imem_data_in,  
+			imem_address =>  if_out_imem_address,
+			pc_out => if_out_pc
+
+	);
+	
+	 -- instantiate instruction fetch decode  register 
+	MIPSregister_if_id : entity work.if_id_register(Behavioral)
+    port map (
+			reset => reset,
+			clk => clk,   
+			instruction_in => if_out_instruction_out,
+			pc_in => if_out_pc,
+			instruction_out  => reg_if_id_instruction_out,
+			pc_out  => reg_if_id_pc_out
+
+	);
+	
+	
 
 	-- instantiate execution pipeline stage
 	MIPSstage_EX : entity work.stage_EX(Behavioral)
