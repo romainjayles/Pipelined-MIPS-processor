@@ -45,7 +45,7 @@ begin
 						b"0110" when (alu_op = b"10") and (func = b"100010") else
 						b"0000" when (alu_op = b"10") and (func = b"100100") else
 						b"0001" when (alu_op = b"10") and (func = b"100101") else
-						b"0111" when (alu_op = b"10") and (func = b"101010");
+						b"0111" when (alu_op = b"10") and (func = b"101010") else b"0000";
 						
 
 end Behavioral;
