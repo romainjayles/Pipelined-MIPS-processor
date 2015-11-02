@@ -178,7 +178,7 @@ begin
     port map (
 			  reset => reset,
 			  clk => clk,
-			  in_pc_imm_offcet => out_pc_imm_offcet,
+			  --in_pc_imm_offcet => out_pc_imm_offcet,
 			  in_branch_control => out_branch_control,
 			  in_mem_read_control => out_mem_read_control,
 			  in_mem_write_control => out_mem_write_control,

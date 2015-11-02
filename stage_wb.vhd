@@ -33,7 +33,7 @@ entity stage_wb is
     Port (
 			  reset : in STD_LOGIC;
 			  clk : in STD_LOGIC;
-			  in_pc_imm_offcet : in STD_LOGIC_VECTOR(31 downto 0);
+			  --in_pc_imm_offcet : in STD_LOGIC_VECTOR(31 downto 0);
 			  in_branch_control : in STD_LOGIC;
 			  in_mem_read_control : in STD_LOGIC;
 			  in_mem_write_control: in STD_LOGIC;
