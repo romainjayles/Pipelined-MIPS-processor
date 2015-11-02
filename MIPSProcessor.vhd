@@ -181,7 +181,7 @@ begin
 			  clk => clk,
 			  --in_pc_imm_offcet => out_pc_imm_offcet,
 			  in_branch_control => out_branch_control,
-			  in_mem_read_control => out_mem_read_control,
+			  in_wb_mem_read_control => out_mem_read_control,
 			  in_mem_write_control => out_mem_write_control,
 			  in_alu_result => out_alu_result,
 			  in_reg_b => out_reg_b,
