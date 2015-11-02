@@ -59,7 +59,7 @@ end stage_wb;
 
 architecture Behavioral of stage_wb is
 	signal read_data : STD_LOGIC_VECTOR(31 downto 0);
-	signal alu_result : STD_LOGIC_VECTOR(31 downto 0);
+	--signal alu_result : STD_LOGIC_VECTOR(31 downto 0);
 	signal pc_src : STD_LOGIC;
 	
 begin
@@ -84,6 +84,6 @@ begin
 	out_procDMemWriteEnable <= '1' when (in_mem_write_control = '1') else
 								  '0' when (in_mem_read_control = '1');
 	pc_src <= in_branch_control AND in_alu_zero;
-	out_procDMemAddr <= alu_result(7 downto 0);
+	out_procDMemAddr <= in_alu_result(7 downto 0);
 end Behavioral;
 
