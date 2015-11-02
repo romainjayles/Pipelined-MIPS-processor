@@ -85,5 +85,6 @@ begin
 								  '0' when (in_mem_read_control = '1');
 	pc_src <= in_branch_control AND in_alu_zero;
 	out_procDMemAddr <= in_alu_result(7 downto 0);
+	out_procDMemWriteData <= in_reg_b;
 end Behavioral;
 
