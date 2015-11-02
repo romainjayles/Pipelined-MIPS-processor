@@ -70,17 +70,17 @@ begin
 			  clk => clk,
 			  pc_src => pc_src,
            read_data =>  in_procDMemReadData,
-           alu_result => in_alu_result,
+           --alu_result => in_alu_result,
            write_reg  => in_write_reg,
 			  
 			  out_pc_src => out_pc_src_control,
            out_read_data => read_data,
-           out_alu_result => alu_result,
+           --out_alu_result => alu_result,
            out_write_reg => out_write_reg
 	);
 	
 	
-	out_write_data <= read_data when (in_mem_to_reg_control = '0') else alu_result;
+	out_write_data <= read_data when (in_mem_to_reg_control = '0') else in_alu_result;
 	out_procDMemWriteEnable <= '1' when (in_mem_write_control = '1') else
 								  '0' when (in_mem_read_control = '1');
 	pc_src <= in_branch_control AND in_alu_zero;
