@@ -205,7 +205,7 @@ begin
    port map (
 	 clk => clk,
 	 rst => reset,
-	 pc_in => if_out_pc,
+	 pc_in => reg_if_id_pc_out,
 	 reg_write => reg_write,
 	 instruction_in => reg_if_id_instruction_out,
 	 write_register => wb_out_write_reg,
