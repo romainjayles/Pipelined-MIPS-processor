@@ -32,6 +32,18 @@ end MIPSProcessor;
 architecture DummyArch of MIPSProcessor is
 	signal counterReg : unsigned(31 downto 0);
 	
+	 signal reg_write : std_logic;
+	 signal pc : std_logic_vector(31 downto 0);
+	 signal instruction_in : std_logic_vector(31 downto 0);
+	 signal write_register : std_logic_vector(4 downto 0);
+	 signal write_data : std_logic_vector(31 downto 0);
+	 signal read_data_1 :  std_logic_vector(31 downto 0);
+	 signal read_data_2 :  std_logic_vector(31 downto 0);
+	 signal immediate_extended :  std_logic_vector(31 downto 0);
+	 signal destination_R :  std_logic_vector(4 downto 0);
+	 signal destination_I :  std_logic_vector(4 downto 0);
+	 signal pc_out_stage_id : std_logic_vector(31 downto 0); 
+	
 	-- execute stage (use only inputs, outputs go into wb stage - i connect them myself, Stefan)
 	---inputs
 	signal in_pc :  STD_LOGIC_VECTOR(31 downto 0);
@@ -67,6 +79,14 @@ architecture DummyArch of MIPSProcessor is
 	signal wb_out_pc_src_control : STD_LOGIC;
 	signal wb_out_write_data : STD_LOGIC_VECTOR(31 downto 0);
 	signal wb_out_write_reg :  STD_LOGIC_VECTOR(4 downto 0);
+	
+   signal regdst :  std_logic;
+   signal branch :  std_logic;
+   signal mem_read :  std_logic;
+   signal mem_to_reg :  std_logic;
+   signal alu_op : std_logic_vector(1 downto 0);
+   signal mem_write : std_logic;
+   signal alu_src : std_logic;
 			  
 	----end
 begin
@@ -128,6 +148,72 @@ begin
 			  out_procDMemWriteEnable => dmem_write_enable,
 			  out_procDMemWriteData		=> dmem_data_out,
 			  out_procDMemAddr	=> dmem_address
+	);
+	
+	
+	MIPSstage_id : entity work.stage_ID(Behavioral)
+   port map (
+	 clk => clk,
+	 rst => reset,
+	 pc_in => pc,
+	 reg_write => reg_write,
+	 instruction_in => instruction_in,
+	 write_register => write_register,
+	 write_data => write_data,
+	 read_data_1 => read_data_1,
+	 read_data_2 => read_data_2,
+	 immediate_extended => immediate_extended,
+	 destination_R => destination_R,
+	 destination_I => destination_I,
+	 pc_out => pc_out_stage_id
+	);
+	
+	MIPScontrol : entity work.control(Behavioral)
+   port map (
+	instruction_in => instruction_in,
+    regdst => regdst,
+    branch => branch,
+    mem_read => mem_read,
+    mem_to_reg => mem_to_reg,
+    alu_op => alu_op,
+    mem_write => mem_write,
+    alu_src => alu_src,
+    reg_write => reg_write
+	 );
+	 
+	 MIPSid_ex : entity work.id_ex(Behavioral)
+   port map (
+		reset => reset,
+		clk => clk,
+		regdst => regdst,
+		branch => branch,
+		mem_read => mem_read,
+		mem_to_reg => mem_to_reg,
+		alu_op => alu_op,
+		mem_write => mem_write,
+		alu_src => alu_src,
+		reg_write => reg_write,
+		read_data_1 => read_data_1,
+		read_data_2 => read_data_2,
+		immediate_extended => immediate_extended,
+		destination_R => destination_R,
+		destination_I => destination_I,
+		pc_in => pc_out_stage_id,
+		----output
+		out_regdst => in_reg_dst_control,
+		out_branch => in_branch_control,
+		out_mem_read => in_mem_read_control,
+		out_mem_to_reg => in_mem_to_reg_control,
+		out_alu_op => in_alu_op_control,
+		out_mem_write => in_mem_write_control,
+		out_alu_src => in_alu_src_control,
+		out_reg_write => in_reg_write_control,
+		out_read_data_1 => in_reg_a,
+		out_read_data_2 => in_reg_b,
+		out_immediate_extended => in_immediate,
+		out_destination_R => in_instruction20_16,
+		out_destination_I => in_instruction15_11,
+		pc_out => in_pc
 	);
 
 	DummyProc: process(clk, reset)

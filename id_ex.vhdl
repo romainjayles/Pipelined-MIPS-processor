@@ -19,6 +19,7 @@ entity id_ex is
 			  immediate_extended : in std_logic_vector(31 downto 0);
 			  destination_R : in std_logic_vector(4 downto 0);
 			  destination_I : in std_logic_vector(4 downto 0);
+			  pc_in : in std_logic_vector(31 downto 0);
 			  -- out register --------------
 			  out_regdst : out std_logic;
 			  out_branch : out std_logic;
@@ -32,7 +33,8 @@ entity id_ex is
 			  out_read_data_2 : out std_logic_vector(31 downto 0);
 			  out_immediate_extended : out std_logic_vector(31 downto 0);
 			  out_destination_R : out std_logic_vector(4 downto 0);
-			  out_destination_I : out std_logic_vector(4 downto 0)
+			  out_destination_I : out std_logic_vector(4 downto 0);
+			  pc_out : out std_logic_vector(31 downto 0)
 			  
 			 );
 end id_ex;
@@ -51,6 +53,7 @@ begin
 			  out_mem_write <= '0';
 			  out_alu_src <= '0';
 			  out_reg_write <= '0';
+			  pc_out <= (others => '0');
 			  out_read_data_1 <= (others => '0');
 			  out_read_data_2 <= (others => '0');
 			  out_immediate_extended <= (others => '0');
@@ -70,6 +73,7 @@ begin
 			  out_immediate_extended <= immediate_extended;
 			  out_destination_R <= destination_R;
 			  out_destination_I <= destination_I;
+			  pc_out <= pc_in;
 		end if;
 	end process;
 

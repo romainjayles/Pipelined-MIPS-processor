@@ -33,6 +33,7 @@ entity stage_ID is
 Port ( 
 	 clk : in  std_logic;
 	 rst : in std_logic;
+	 pc_in : in std_logic_vector(31 downto 0);
 	 reg_write : in std_logic;
 	 instruction_in : in std_logic_vector(31 downto 0);
 	 write_register : in std_logic_vector(4 downto 0);
@@ -41,10 +42,11 @@ Port (
 	 read_data_2 : out std_logic_vector(31 downto 0);
 	 immediate_extended : out std_logic_vector(31 downto 0);
 	 destination_R : out std_logic_vector(4 downto 0);
-	 destination_I : out std_logic_vector(4 downto 0));
+	 destination_I : out std_logic_vector(4 downto 0);
+	 pc_out : out std_logic_vector(31 downto 0));
 end stage_ID;
 
-architecture behavior of stage_ID is
+architecture Behavioral of stage_ID is
     
 begin
 register_file: entity work.general_register(Behavioral) port map(
@@ -63,6 +65,7 @@ register_file: entity work.general_register(Behavioral) port map(
 		immediate_extended(31 downto 16) <= (31 downto 16 => instruction_in(15));
 		destination_R <= instruction_in(20 downto 16);
 		destination_I <= instruction_in(15 downto 11);
+		pc_out <= pc_in;
 	 
 end;
 	 
