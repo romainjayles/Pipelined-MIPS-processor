@@ -33,10 +33,6 @@ architecture DummyArch of MIPSProcessor is
 	signal counterReg : unsigned(31 downto 0);
 	
 	 signal reg_write : std_logic;
-	 signal pc : std_logic_vector(31 downto 0);
-	 signal instruction_in : std_logic_vector(31 downto 0);
-	 signal write_register : std_logic_vector(4 downto 0);
-	 signal write_data : std_logic_vector(31 downto 0);
 	 signal read_data_1 :  std_logic_vector(31 downto 0);
 	 signal read_data_2 :  std_logic_vector(31 downto 0);
 	 signal immediate_extended :  std_logic_vector(31 downto 0);
@@ -116,7 +112,7 @@ architecture DummyArch of MIPSProcessor is
 begin
 
 	 -- instantiate instruction fetch pipeline stage
-	MIPSstage_if : entity work.stage_if(Behavioral)
+	MIPSstage_if : entity work.IF_stage(Behavioral)
     port map (
 			reset => reset,
 			clk => clk,
@@ -209,11 +205,11 @@ begin
    port map (
 	 clk => clk,
 	 rst => reset,
-	 pc_in => pc,
+	 pc_in => if_out_pc,
 	 reg_write => reg_write,
-	 instruction_in => instruction_in,
-	 write_register => write_register,
-	 write_data => write_data,
+	 instruction_in => reg_if_id_instruction_out,
+	 write_register => wb_out_write_reg,
+	 write_data => wb_out_write_data,
 	 read_data_1 => read_data_1,
 	 read_data_2 => read_data_2,
 	 immediate_extended => immediate_extended,
@@ -224,7 +220,7 @@ begin
 	
 	MIPScontrol : entity work.control(Behavioral)
    port map (
-	instruction_in => instruction_in,
+	instruction_in => reg_if_id_instruction_out,
     regdst => regdst,
     branch => branch,
     mem_read => mem_read,
