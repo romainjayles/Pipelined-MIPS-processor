@@ -61,7 +61,7 @@ begin
 			  out_destination_I <= (others => '0');
 		elsif rising_edge(clk) then
 			  out_regdst <= regdst;
-			  out_regdst <= regdst;
+			  out_branch <= branch;
 			  out_mem_read <= mem_read;
 			  out_mem_to_reg <= mem_to_reg;
 			  out_alu_op <= alu_op;
