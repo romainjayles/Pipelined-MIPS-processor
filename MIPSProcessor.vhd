@@ -75,6 +75,7 @@ architecture Behavioral of MIPSProcessor is
 	signal wb_out_pc_src_control : STD_LOGIC;
 	signal wb_out_write_data : STD_LOGIC_VECTOR(31 downto 0);
 	signal wb_out_write_reg :  STD_LOGIC_VECTOR(4 downto 0);
+	signal wb_out_reg_write_control : STD_LOGIC;
 	
    signal regdst :  std_logic;
    signal branch :  std_logic;
@@ -194,6 +195,8 @@ begin
 			  out_pc_src_control => wb_out_pc_src_control,
 			  out_write_data => wb_out_write_data,
 			  out_write_reg => wb_out_write_reg,
+			  out_reg_write_control => wb_out_reg_write_control,
+
 			  
 			  out_procDMemWriteEnable => dmem_write_enable,
 			  out_procDMemWriteData		=> dmem_data_out,
