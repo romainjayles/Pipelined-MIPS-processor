@@ -209,7 +209,7 @@ begin
 	 clk => clk,
 	 rst => reset,
 	 pc_in => reg_if_id_pc_out,
-	 reg_write => reg_write,
+	 reg_write => wb_out_reg_write_control,
 	 instruction_in => reg_if_id_instruction_out,
 	 write_register => wb_out_write_reg,
 	 write_data => wb_out_write_data,

@@ -54,7 +54,7 @@ entity stage_wb is
 			  out_procDMemWriteEnable : out std_logic;
 			  out_procDMemWriteData		: out std_logic_vector(31 downto 0);
 			  out_procDMemAddr				: out std_logic_vector(7 downto 0);
-			  out_reg_write_control : in STD_LOGIC
+			  out_reg_write_control : out STD_LOGIC
 	 );
 end stage_wb;
 
