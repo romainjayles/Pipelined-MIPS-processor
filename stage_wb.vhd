@@ -47,10 +47,9 @@ entity stage_wb is
 			  in_procDMemReadData	:  in std_logic_vector(31 downto 0);
 			  
 			  out_pc_src_control : out STD_LOGIC;
-			  --out_mem_to_reg_control : out STD_LOGIC;
 			  out_write_data : out STD_LOGIC_VECTOR(31 downto 0);
 			  out_write_reg : out STD_LOGIC_VECTOR(4 downto 0);
-			  
+			  --out_mem_to_reg_control : out STD_LOGIC;
 			  out_procDMemWriteEnable : out std_logic;
 			  out_procDMemWriteData		: out std_logic_vector(31 downto 0);
 			  out_procDMemAddr				: out std_logic_vector(7 downto 0);
@@ -62,6 +61,7 @@ architecture Behavioral of stage_wb is
 	--signal read_data : STD_LOGIC_VECTOR(31 downto 0);
 	signal alu_result : STD_LOGIC_VECTOR(31 downto 0);
 	signal pc_src : STD_LOGIC;
+	signal out_mem_to_reg_control : STD_LOGIC;
 	
 begin
 
@@ -74,16 +74,18 @@ begin
            alu_result => in_alu_result,
            write_reg  => in_write_reg,
 			  in_reg_write_control => in_reg_write_control,
+			  in_mem_to_reg_control => in_mem_to_reg_control,
 			  
 			  out_pc_src => out_pc_src_control,
            --out_read_data => read_data,
            out_alu_result => alu_result,
            out_write_reg => out_write_reg,
-			  out_reg_write_control => out_reg_write_control
+			  out_reg_write_control => out_reg_write_control,
+			  out_mem_to_reg_control => out_mem_to_reg_control
 	);
 	
 	
-	out_write_data <= in_procDMemReadData when (in_mem_to_reg_control = '0') else alu_result;
+	out_write_data <= in_procDMemReadData when (out_mem_to_reg_control = '0') else alu_result;
 	out_procDMemWriteEnable <= '1' when (in_mem_write_control = '1' and in_wb_mem_read_control = '0') else
 								  '0' when (in_wb_mem_read_control = '1') else '0';
 	pc_src <= in_branch_control AND in_alu_zero;

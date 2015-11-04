@@ -68,6 +68,7 @@ end control;
 				regdst <= '1';
 				alu_op <= "10";
 				reg_write <= '1';
+				mem_to_reg <= '1';
 			elsif opcode = "000010" or opcode = "000011" then -- J execution
 				branch <= '0';
 				alu_op <= "01";
