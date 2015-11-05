@@ -73,7 +73,6 @@ end control;
 				branch <= '0';
 				alu_op <= "01";
 			elsif opcode = "100011" then -- LOAD execution
-				--mem_to_reg <= '1';
 				reg_write <= '1';
 				mem_read <= '1';
 				alu_src <= '1';
@@ -85,6 +84,7 @@ end control;
 				alu_op <= "01";
 			elsif opcode = "001111" then -- LUI execution
 				reg_write <= '1';
+				mem_to_reg <= '1';
 				alu_src <= '1';
 				alu_op <= "11";
 			end if;
