@@ -134,7 +134,7 @@ MIPSalu : entity work.alu(Behavioral)
 --- end
 
 -- pc relative addres calculation
-	immediate_shift <= in_immediate(29 downto 0) & '0' & '0';
+	immediate_shift <= in_immediate;
 	pc_imm_offcet <= std_logic_vector(signed(in_pc) + signed(immediate_shift));
 --- end
 -- destination register selection

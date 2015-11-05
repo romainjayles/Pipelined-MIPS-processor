@@ -13,10 +13,10 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
  
-ENTITY tb_MIPSProcessor IS
-END tb_MIPSProcessor;
+ENTITY tb_MIPSProcessor_stall IS
+END tb_MIPSProcessor_stall;
  
-ARCHITECTURE behavior OF tb_MIPSProcessor IS
+ARCHITECTURE behavior OF tb_MIPSProcessor_stall IS
 	constant ADDR_WIDTH : integer := 8;
 	constant DATA_WIDTH : integer := 32;
 	
@@ -111,7 +111,7 @@ DataMem:			entity work.DualPortMem port map (
 		end WriteInstructionWord;
 		
 		procedure FillInstructionMemory is
-			constant TEST_INSTRS : integer := 85;
+			constant TEST_INSTRS : integer := 95;
 			type InstrData is array (0 to TEST_INSTRS-1) of std_logic_vector(DATA_WIDTH-1 downto 0);
 			variable TestInstrData : InstrData := (
 				X"8C010001", --lw $1, 1($0)		/$1 =  2
@@ -130,13 +130,17 @@ DataMem:			entity work.DualPortMem port map (
 				X"00000020",
 				X"00000020",
 				X"AC030005", --sw $3, 5($0)		/Saving value 12 on address 5	
-				--X"10000002", --beq $0, $0, 4		/Jumping to adress +2 = 8	
 				X"00000020",
 				X"00000020",
 				X"00000020",
 				X"00000020",
-				--X"AC030003", --sw $3, 3($0)      /SKIPPED (Saving value 12 on address 3)			
-				--X"AC030004", --sw $3, 4($0)		/SKIPPED	(Saving value 12 on address 4)
+				X"10000005", --beq $0, $0, 2		/Jumping to adress +2 = 8	
+				X"AC030003", --sw $3, 3($0)      /SKIPPED (Saving value 12 on address 3)			
+				X"AC030003", --sw $3, 4($0)		/SKIPPED	(Saving value 12 on address 4)
+				X"AC030003",
+				X"AC030004",
+				X"AC030003",
+				X"AC030003",
 				X"AC030006", --sw $3, 6($0)		/Saving value 12 on address 6	
 				X"AC030007", --sw $3, 7($0)		/Saving value 12 on address 7	
 				X"3C030006", --lui $3, 6			/$3 = 6 * 2^16 = 393216 = 0x60000
@@ -157,7 +161,7 @@ DataMem:			entity work.DualPortMem port map (
 				X"00000020",
 				X"00000020",
 				X"AC030009", --sw $3, 9($0)		/Saving 0x60002 on address 9	
-				--X"10400002", --beq $2, $0, 2		/No branch	
+				X"10400002", --beq $2, $0, 2		/No branch	
 				X"0001982A", --slt $19, $0, $1	/$19 = 1
 				X"00000020",
 				X"00000020",
@@ -166,8 +170,8 @@ DataMem:			entity work.DualPortMem port map (
 				X"00000020",				
 				X"AC13000C", --sw $19, 12($0)		/Saving 1 on address 12	
 				X"08000013", --j 19					/jump to 19
-				--X"AC030001", --sw $3, 1($0)		/SKIPPED (Saving 0x60002 on address 1)	
-				--X"1000FFFD", --beq $0, $0, -3		/SKIPPED (Branch back three steps)	
+				X"AC030001", --sw $3, 1($0)		/SKIPPED (Saving 0x60002 on address 1)	
+				X"1000FFFD", --beq $0, $0, -3		/SKIPPED (Branch back three steps)	
 				X"00622022", --sub $4, $3, $2		/$4 = 0x5FFF8
 				X"00000020",
 				X"00000020",
@@ -254,6 +258,9 @@ DataMem:			entity work.DualPortMem port map (
 		begin
 			wait until processor_enable = '0';
 			-- expected data memory contents, derived from program behavior
+			CheckDataWord(x"00000000", 1);
+			CheckDataWord(x"00000000", 3);
+			CheckDataWord(x"00000000", 4);
 			CheckDataWord(x"0000000C", 5);
 			CheckDataWord(x"0000000C", 6);
 			CheckDataWord(x"0000000C", 7);
@@ -263,6 +270,7 @@ DataMem:			entity work.DualPortMem port map (
 			CheckDataWord(x"0005FFEE", 13);
 			CheckDataWord(x"00000008", 15);
 			CheckDataWord(x"0000000E", 16);
+			CheckDataWord(x"00000000", 18);
 		end CheckDataMemory;
 		
    begin

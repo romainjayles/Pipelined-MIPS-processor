@@ -40,6 +40,7 @@ Port (
 	 PCsrc				: in	std_logic;
 	 PCbranch			: in	std_logic_vector(31 downto 0);
 	 pc_enable        : in  std_logic;
+	 stall            : in std_logic;
 	 instruction_out  : out std_logic_vector(31 downto 0);
     imem_data_in     : in  std_logic_vector(31 downto 0);
     imem_address     : out std_logic_vector(7 downto 0);
@@ -75,7 +76,11 @@ begin
 													  -- be in PC
 	
 	-- instruction --
-	current_instruction <= imem_data_in;
+	with stall select
+		current_instruction <= 
+		imem_data_in when '0',
+		x"00000000" when '1';
+		
 	instruction_out     <= current_instruction;
 	 
 	process(clk, reset, processor_enable, pc_enable) is

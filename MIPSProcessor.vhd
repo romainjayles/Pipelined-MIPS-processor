@@ -84,6 +84,12 @@ architecture Behavioral of MIPSProcessor is
    signal alu_op : std_logic_vector(1 downto 0);
    signal mem_write : std_logic;
    signal alu_src : std_logic;
+	signal jump : std_logic;
+	
+	signal jump_address : std_logic_vector(31 downto 0);
+	signal pc_branch_address : std_logic_vector(31 downto 0);
+	
+	signal stall : std_logic;
 			  
 	----end
 	
@@ -109,6 +115,13 @@ architecture Behavioral of MIPSProcessor is
 	signal reg_if_id_instruction_out : std_logic_vector(31 downto 0);
 	signal reg_if_id_pc_out : std_logic_vector(31 downto 0);
 	
+	signal pcsrc : std_logic;
+	
+	-- these signal are used to reset or flush some stages
+	signal reset_if_id : std_logic;
+	signal reset_id_ex : std_logic;
+	signal reset_ex_mem : std_logic;
+	
 	
 begin
 
@@ -118,9 +131,10 @@ begin
 			reset => reset,
 			clk => clk,
 			processor_enable => processor_enable,
-			PCsrc	=> wb_out_pc_src_control,			
+			PCsrc	=> pcsrc,			
 			PCbranch	=>	out_pc_imm_offcet,	
-			pc_enable => if_in_pc_enable,     
+			pc_enable => if_in_pc_enable,  
+			stall => stall,
 			instruction_out => if_out_instruction_out,
 			imem_data_in => imem_data_in,  
 			imem_address => imem_address,
@@ -131,7 +145,7 @@ begin
 	 -- instantiate instruction fetch decode  register 
 	MIPSregister_if_id : entity work.if_id_register(Behavioral)
     port map (
-			reset => reset,
+			reset => reset_if_id,
 			clk => clk,   
 			instruction_in => if_out_instruction_out,
 			pc_in => if_out_pc,
@@ -146,7 +160,7 @@ begin
 	MIPSstage_EX : entity work.stage_EX(Behavioral)
     port map (
 			  clk => clk,
-           reset => reset,
+           reset => reset_ex_mem,
            in_pc => in_pc,
            in_reg_a => in_reg_a,
            in_reg_b => in_reg_b,
@@ -231,12 +245,13 @@ begin
     alu_op => alu_op,
     mem_write => mem_write,
     alu_src => alu_src,
-    reg_write => reg_write
+    reg_write => reg_write,
+	 jump => jump
 	 );
 	 
 	 MIPSid_ex : entity work.id_ex(Behavioral)
    port map (
-		reset => reset,
+		reset => reset_id_ex,
 		clk => clk,
 		regdst => regdst,
 		branch => branch,
@@ -279,6 +294,22 @@ begin
 			end if;
 		end if;
 	end process;
+	-- pc source is controled by jump or branch signal
+	pcsrc <= wb_out_pc_src_control or jump;
+	-- we compute the jump address
+	jump_address <=  reg_if_id_pc_out(25 downto 0) & reg_if_id_instruction_out(31 downto 26);
+	with jump select
+		pc_branch_address <=
+		out_pc_imm_offcet when '0',
+		jump_address when '1';
+		
+	-- Flushing of signals 
+	reset_if_id <= reset or wb_out_pc_src_control or not processor_enable;
+	reset_id_ex <= reset or wb_out_pc_src_control;
+	reset_ex_mem <= reset; -- or wb_out_pc_src_control;
+	
+	-- inserting buble
+	stall <= wb_out_pc_src_control;
 	
 	if_in_pc_enable <= '1';
 	--dmem_write_enable <= processor_enable;

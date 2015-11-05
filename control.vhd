@@ -39,7 +39,8 @@ entity control is
     alu_op : out std_logic_vector(1 downto 0);
     mem_write : out std_logic;
     alu_src : out std_logic;
-    reg_write : out std_logic
+    reg_write : out std_logic;
+	 jump : out std_logic
 	 );
 
 end control;
@@ -63,15 +64,14 @@ end control;
 				mem_write <= '0';
 				alu_src <= '0';
 				reg_write <= '0';
-				
+				jump <= '0';
 			if opcode = "000000" then -- R execution
 				regdst <= '1';
 				alu_op <= "10";
 				reg_write <= '1';
 				mem_to_reg <= '1';
 			elsif opcode = "000010" or opcode = "000011" then -- J execution
-				branch <= '0';
-				alu_op <= "01";
+				jump <= '1';
 			elsif opcode = "100011" then -- LOAD execution
 				reg_write <= '1';
 				mem_read <= '1';
