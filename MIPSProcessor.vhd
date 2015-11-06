@@ -90,6 +90,8 @@ architecture Behavioral of MIPSProcessor is
 	signal pc_branch_address : std_logic_vector(31 downto 0);
 	
 	signal stall : std_logic;
+	signal delayed_branch : std_logic;
+	signal delayed_branch2 : std_logic;
 			  
 	----end
 	
@@ -284,20 +286,20 @@ begin
 		pc_out => in_pc
 	);
 
-	DummyProc: process(clk, reset)
+	temporisation: process(clk, reset)
 	begin
 		if reset = '1' then
-			counterReg <= (others => '0');
+			delayed_branch <= '0';
 		elsif rising_edge(clk) then
 			if processor_enable = '1' then
-				counterReg <= counterReg + 1;
+				delayed_branch <= wb_out_pc_src_control;
 			end if;
 		end if;
 	end process;
 	-- pc source is controled by jump or branch signal
 	pcsrc <= wb_out_pc_src_control or jump;
 	-- we compute the jump address
-	jump_address <=  reg_if_id_pc_out(25 downto 0) & reg_if_id_instruction_out(31 downto 26);
+	jump_address <=  reg_if_id_instruction_out(25 downto 0) & reg_if_id_pc_out(31 downto 26);
 	with jump select
 		pc_branch_address <=
 		out_pc_imm_offcet when '0',
@@ -306,10 +308,10 @@ begin
 	-- Flushing of signals 
 	reset_if_id <= reset or wb_out_pc_src_control or not processor_enable;
 	reset_id_ex <= reset or wb_out_pc_src_control;
-	reset_ex_mem <= reset; -- or wb_out_pc_src_control;
+	reset_ex_mem <= reset;
 	
 	-- inserting buble
-	stall <= wb_out_pc_src_control;
+	stall <= delayed_branch;
 	
 	if_in_pc_enable <= '1';
 	--dmem_write_enable <= processor_enable;

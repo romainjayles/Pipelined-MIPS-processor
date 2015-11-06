@@ -62,7 +62,7 @@ architecture Behavioral of IF_stage is
 
 begin
 	
-	pc_out <= increment_PC;
+	pc_out <= PC;
 
 -- The mux
   with PCsrc select
