@@ -31,7 +31,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity Forwarding_unit is
     Port ( 
-				--MEM hazard
+				
 				ex_mem_regWrite : 		in  STD_LOGIC;
 				ex_mem_registerRd : 		in  STD_LOGIC_VECTOR(4 downto 0);
 				

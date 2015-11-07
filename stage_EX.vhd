@@ -37,8 +37,8 @@ entity stage_EX is
            in_pc : in  STD_LOGIC_VECTOR(31 downto 0);
            in_reg_a : in  STD_LOGIC_VECTOR(31 downto 0);
            in_reg_b : in  STD_LOGIC_VECTOR(31 downto 0);
-           in_instruction20_16 : in  STD_LOGIC_VECTOR(4 downto 0);
-           in_instruction15_11 : in  STD_LOGIC_VECTOR(4 downto 0);
+           in_instruction20_16 : in  STD_LOGIC_VECTOR(4 downto 0); -- rt
+           in_instruction15_11 : in  STD_LOGIC_VECTOR(4 downto 0); -- rd
            in_reg_dst_control : in  STD_LOGIC;
            in_branch_control : in  STD_LOGIC;
 			  in_mem_read_control : in STD_LOGIC;
@@ -48,6 +48,23 @@ entity stage_EX is
 			  in_immediate : in STD_LOGIC_VECTOR(31 downto 0);
 			  in_reg_write_control : in  STD_LOGIC;
 			  in_mem_to_reg_control : in STD_LOGIC;
+			  
+			  -- begin forwarding unit
+			  -- rs and rt input registers to the fwd unit
+			  in_ex_fwd_rs : in std_logic_vector(4 downto 0);
+			  in_ex_fwd_rt : in std_logic_vector(4 downto 0);
+			  -- rd input from ex_mem register
+			  in_ex_fwd_rd_ex_mem : in std_logic_vector(4 downto 0);
+			  -- rd input from mem_wb register
+			  in_ex_fwd_rd_mem_wb : in std_logic_vector(4 downto 0);
+			  -- regwrite input from ex_mem register and mem_wb register
+			  in_ex_fwd_regwrite_ex_mem : in std_logic;
+			  in_ex_fwd_regwrite_mem_wb : in std_logic;
+			  -- 2 other posible sources for ALU operands 
+			  in_ex_src_fwd_ex_mem : in STD_LOGIC_VECTOR(31 downto 0);
+			  in_ex_src_fwd_mem_wb : in STD_LOGIC_VECTOR(31 downto 0);
+			  
+			  -- end forwarding unit
 			  
 			  out_pc_imm_offcet : out STD_LOGIC_VECTOR(31 downto 0);
 			  --out_pc_src_control : out STD_LOGIC;
@@ -69,6 +86,7 @@ end stage_EX;
 architecture Behavioral of stage_EX is
 
 	 signal operand_B :  STD_LOGIC_VECTOR(31 downto 0);
+	 signal operand_A :  STD_LOGIC_VECTOR(31 downto 0);
 	 
 	 signal pc_imm_offcet : STD_LOGIC_VECTOR(31 downto 0);
 	 signal alu_result :  STD_LOGIC_VECTOR(31 downto 0);
@@ -80,13 +98,45 @@ architecture Behavioral of stage_EX is
 	signal alu_control :  STD_LOGIC_VECTOR(3 downto 0);
 	
 	signal immediate_shift    : STD_LOGIC_VECTOR(31 DOWNTO 0);
+	
+	-- begin forwarding unit. These signlas go to the multiplexer for input to the ALU
+	signal fordward_a : std_logic_vector(1 downto 0);
+	signal fordward_b : std_logic_vector(1 downto 0);
+	-- this signal gets the result of the forwarding operation after the multiplex
+	signal fwd_operandb_mul : STD_LOGIC_VECTOR(31 downto 0);
+	-- end forwarding unit
+	
 
 	
 begin
+
+-- instantiate forwarding unit
+MIPSfwd : entity work.forwarding_unit(Behavioral)
+    port map (
+
+	 
+	 -- inputs
+		ex_mem_regWrite => in_ex_fwd_regwrite_ex_mem,
+		ex_mem_registerRd => in_ex_fwd_rd_ex_mem,
+
+		mem_wb_regWrite => in_ex_fwd_regwrite_mem_wb,
+		mem_wb_registerRd => in_ex_fwd_rd_mem_wb,
+
+		id_ex_registerRs => in_ex_fwd_rs,
+		id_ex_registerRt => in_ex_fwd_rt,
+	-- outputs
+ 
+		fordward_a => fordward_a,
+		fordward_b => fordward_b
+      );	
+		
+
+
 -- instantiate ALU
 MIPSalu : entity work.alu(Behavioral)
     port map (
-      operand_A => in_reg_a,
+      --operand_A => in_reg_a,
+		operand_A => operand_A,
       operand_B => operand_B ,
       result    => alu_result,
       zero      => alu_zero,
@@ -123,12 +173,27 @@ MIPSalu : entity work.alu(Behavioral)
 			  out_add_result => out_pc_imm_offcet,
            out_zero => out_alu_zero,
            out_alu_result => out_alu_result,
-           out_operand_b => out_reg_b,
-           out_write_reg => out_write_reg,
+           out_operand_b => out_reg_b, -- 32 bit register
+           out_write_reg => out_write_reg, -- 5 bit register EX.MEM/RegisterRd
 			  out_mem_to_reg_control => out_mem_to_reg_control
       );	
 -- alu and alu control connection	
-	operand_B <= in_reg_b when (in_alu_src_control = '0') else in_immediate;
+	-- LAu operands with forwarding implementation
+	
+	fwd_operandb_mul <= 	in_reg_b when (fordward_b = "00") 					else 
+								in_ex_src_fwd_ex_mem when (fordward_b = "10")	else
+								in_ex_src_fwd_mem_wb when (fordward_b = "01") 	else
+								in_reg_b;
+	
+	operand_B <= fwd_operandb_mul when (in_alu_src_control = '0') else 
+					 in_immediate;
+					 
+	operand_A <= in_reg_a when (fordward_a = "00") 					else 
+					 in_ex_src_fwd_ex_mem when (fordward_a = "10")	else
+					 in_ex_src_fwd_mem_wb when (fordward_a = "01") 	else
+					 in_reg_a;
+	
+	
 	alu_op <= in_alu_op_control;
 	func <= in_immediate(5 downto 0);
 --- end

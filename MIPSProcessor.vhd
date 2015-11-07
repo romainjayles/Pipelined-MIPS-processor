@@ -39,6 +39,19 @@ architecture Behavioral of MIPSProcessor is
 	 signal destination_R :  std_logic_vector(4 downto 0);
 	 signal destination_I :  std_logic_vector(4 downto 0);
 	 signal pc_out_stage_id : std_logic_vector(31 downto 0); 
+	 
+	 -- begin forwarding unit
+	 -- outputs at ID stage and input to ID_EX register
+	 signal out_id_fwd_rs : std_logic_vector(4 downto 0);
+	 signal out_id_fwd_rt : std_logic_vector(4 downto 0);
+	 
+	 -- output at ID_EX_register and input to EX stage
+	 signal out_id_ex_fwd_rs : std_logic_vector(4 downto 0);
+	 signal out_id_ex_fwd_rt : std_logic_vector(4 downto 0);
+	 
+	 -- output at the ex_mem register goes to the input at the EX stage
+	 -- this signal is the same as signal out_write_reg
+	 -- end forwarding unit
 	
 	-- execute stage (use only inputs, outputs go into wb stage - i connect them myself, Stefan)
 	---inputs
@@ -178,6 +191,33 @@ begin
 			  in_reg_write_control => in_reg_write_control,
 			  in_mem_to_reg_control => in_mem_to_reg_control,
 			  
+			  -- begin forwarding unit
+			  -- EX stage gets the outputs from id_ex_register
+			  in_ex_fwd_rs => out_id_ex_fwd_rs,
+			  in_ex_fwd_rt => out_id_ex_fwd_rt,
+			  
+			  -- EX stage gets the output from the ex_mem register rd.
+			  -- in this case, ex_mem register is instantiated inside the 
+			  -- EX stage
+			 
+			  in_ex_fwd_rd_ex_mem => out_write_reg,
+			  
+			  -- EX stage gets the output from the mem_wb register rd.
+			  -- in this case, ex_mem register is instantiated inside the 
+			  -- EX stage
+			  in_ex_fwd_rd_mem_wb => wb_out_write_reg,
+			  
+			  -- regwrite input from ex_mem register
+			  in_ex_fwd_regwrite_ex_mem => out_reg_write_control,
+			  
+			  -- regwrite input from ex_mem register
+			  in_ex_fwd_regwrite_mem_wb => wb_out_reg_write_control,
+			  
+			  -- 2 other posible sources for ALU operands 
+			  in_ex_src_fwd_ex_mem => out_alu_result,
+			  in_ex_src_fwd_mem_wb => wb_out_write_data,
+			  -- end forwarding unit
+			  
 			  out_pc_imm_offcet => out_pc_imm_offcet,
 			  out_branch_control => out_branch_control,
 			  out_mem_read_control => out_mem_read_control,
@@ -234,7 +274,12 @@ begin
 	 immediate_extended => immediate_extended,
 	 destination_R => destination_R,
 	 destination_I => destination_I,
-	 pc_out => pc_out_stage_id
+	 pc_out => pc_out_stage_id,
+	 
+	 -- begin forwarding unit
+	 out_id_fwd_rs => out_id_fwd_rs,
+	 out_id_fwd_rt => out_id_fwd_rt
+	 -- end forwarding unit
 	);
 	
 	MIPScontrol : entity work.control(Behavioral)
@@ -269,6 +314,13 @@ begin
 		destination_R => destination_R,
 		destination_I => destination_I,
 		pc_in => pc_out_stage_id,
+		
+		-- begin forwarding unit
+		-- the inputs at ID_EX register get the output of ID stage
+		in_id_ex_fwd_rs => out_id_fwd_rs,
+		in_id_ex_fwd_rt => out_id_fwd_rt,
+		-- end forwarding unit
+		
 		----output
 		out_regdst => in_reg_dst_control,
 		out_branch => in_branch_control,
@@ -283,7 +335,14 @@ begin
 		out_immediate_extended => in_immediate,
 		out_destination_R => in_instruction20_16,
 		out_destination_I => in_instruction15_11,
-		pc_out => in_pc
+		pc_out => in_pc,
+		
+		-- begin forwarding unit
+		-- the output at ID_EX go to the input of EX_stage
+		out_id_ex_fwd_rs => out_id_ex_fwd_rs,
+		out_id_ex_fwd_rt => out_id_ex_fwd_rt
+		-- end forwarding unit
+		
 	);
 
 	temporisation: process(clk, reset)

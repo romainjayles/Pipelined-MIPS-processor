@@ -20,6 +20,13 @@ entity id_ex is
 			  destination_R : in std_logic_vector(4 downto 0);
 			  destination_I : in std_logic_vector(4 downto 0);
 			  pc_in : in std_logic_vector(31 downto 0);
+			  
+			  -- begin forwarding unit
+			  -- these inputs get the outputs at ID stage
+			  in_id_ex_fwd_rs : in std_logic_vector(4 downto 0);
+			  in_id_ex_fwd_rt : in std_logic_vector(4 downto 0);
+			  -- end forwarding unit
+				
 			  -- out register --------------
 			  out_regdst : out std_logic;
 			  out_branch : out std_logic;
@@ -34,7 +41,12 @@ entity id_ex is
 			  out_immediate_extended : out std_logic_vector(31 downto 0);
 			  out_destination_R : out std_logic_vector(4 downto 0);
 			  out_destination_I : out std_logic_vector(4 downto 0);
-			  pc_out : out std_logic_vector(31 downto 0)
+			  pc_out : out std_logic_vector(31 downto 0);
+			  
+			  -- begin forwarding unit
+			  out_id_ex_fwd_rs : out std_logic_vector(4 downto 0);
+			  out_id_ex_fwd_rt : out std_logic_vector(4 downto 0)
+			  -- end forwarding unit
 			  
 			 );
 end id_ex;
@@ -59,6 +71,13 @@ begin
 			  out_immediate_extended <= (others => '0');
 			  out_destination_R <= (others => '0');
 			  out_destination_I <= (others => '0');
+			  
+			  -- begin forwarding unit
+			  -- outputs at ID stage
+			  out_id_ex_fwd_rs <= (others => '0');
+			  out_id_ex_fwd_rt <= (others => '0');
+			  -- end forwarding unit
+			  
 		elsif rising_edge(clk) then
 			  out_regdst <= regdst;
 			  out_branch <= branch;
@@ -74,6 +93,13 @@ begin
 			  out_destination_R <= destination_R;
 			  out_destination_I <= destination_I;
 			  pc_out <= pc_in;
+			  
+			  -- begin forwarding unit
+			  out_id_ex_fwd_rs <= in_id_ex_fwd_rs;
+			  out_id_ex_fwd_rt <= in_id_ex_fwd_rs;
+			  -- end forwarding unit
+			  
+			  
 		end if;
 	end process;
 

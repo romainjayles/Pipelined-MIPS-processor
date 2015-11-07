@@ -43,7 +43,14 @@ Port (
 	 immediate_extended : out std_logic_vector(31 downto 0);
 	 destination_R : out std_logic_vector(4 downto 0);
 	 destination_I : out std_logic_vector(4 downto 0);
-	 pc_out : out std_logic_vector(31 downto 0));
+	 pc_out : out std_logic_vector(31 downto 0);
+	 
+	 -- begin forwarding unit
+	 out_id_fwd_rs : out std_logic_vector(4 downto 0);
+	 out_id_fwd_rt : out std_logic_vector(4 downto 0)
+	 -- end forwarding unit
+	 
+	 );
 end stage_ID;
 
 architecture Behavioral of stage_ID is
@@ -66,6 +73,11 @@ register_file: entity work.general_register(Behavioral) port map(
 		destination_R <= instruction_in(20 downto 16);
 		destination_I <= instruction_in(15 downto 11);
 		pc_out <= pc_in;
+	 
+	-- begin forwarding unit
+		out_id_fwd_rs <= instruction_in(25 downto 21);
+		out_id_fwd_rt <= instruction_in(20 downto 16);
+	-- end forwarding unit
 	 
 end;
 	 
