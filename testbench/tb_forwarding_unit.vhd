@@ -2,10 +2,10 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   11:05:20 11/03/2015
+-- Create Date:   11:43:22 11/08/2015
 -- Design Name:   
--- Module Name:   /home/camilo/computer_design/exercise_2/solution_v2/solution_v2/tb_forwarding_unit.vhd
--- Project Name:  solution_v2
+-- Module Name:   /home/camilo/computer_design/exercise_2/solution_v3/solution_v3/tb2_forwarding_unit.vhd
+-- Project Name:  solution_v3
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
@@ -27,17 +27,15 @@
 --------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
-use work.defs.all;
-use work.testutil.all;
  
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY tb_forwarding_unit IS
-END tb_forwarding_unit;
+ENTITY tb2_forwarding_unit IS
+END tb2_forwarding_unit;
  
-ARCHITECTURE behavior OF tb_forwarding_unit IS 
+ARCHITECTURE behavior OF tb2_forwarding_unit IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
@@ -54,7 +52,6 @@ ARCHITECTURE behavior OF tb_forwarding_unit IS
         );
     END COMPONENT;
     
-	 
 
    --Inputs
    signal ex_mem_regWrite : std_logic := '0';
@@ -71,9 +68,9 @@ ARCHITECTURE behavior OF tb_forwarding_unit IS
    -- appropriate port name 
  
    constant clock_period : time := 10 ns;
-	
-	signal clock: std_logic;
  
+	signal clock: std_logic;
+	
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
@@ -102,16 +99,15 @@ BEGIN
    stim_proc: process
    begin		
       -- hold reset state for 100 ns.
+		report "Test begin" severity note;
 		
-	 report "Test begin" severity note;
-    
-     --wait for 100 ns;	
-
-      wait for clock_period*4;
+      --wait for 100 ns;	
+		
+		wait for clock_period*4;
 
       -- insert stimulus here 
-	
-			-- test for EX hazard for operand A and B
+		
+		-- test for EX hazard for operand A and B
 			ex_mem_regWrite <= '1';
          ex_mem_registerRd <= "00001";
          mem_wb_regWrite <= '0' ;
@@ -126,8 +122,8 @@ BEGIN
 	 wait for clock_period;
 	 
 	 -- test for MEM hazard for operand A and B
-			ex_mem_regWrite <= '0';
-         ex_mem_registerRd <= "00000";
+			ex_mem_regWrite <= '1';
+         ex_mem_registerRd <= "00010";
          mem_wb_regWrite <= '1' ;
          mem_wb_registerRd <= "00001";
          id_ex_registerRs <= "00001";
@@ -141,7 +137,7 @@ BEGIN
 
 -- test for no hazard for operand A and B
 			ex_mem_regWrite <= '1';
-         ex_mem_registerRd <= "01001";
+         ex_mem_registerRd <= "00001";
          mem_wb_regWrite <= '1' ;
          mem_wb_registerRd <= "01000";
          id_ex_registerRs <= "00001";
@@ -152,10 +148,23 @@ BEGIN
 	 report "Test 2 passed";
 	 
 	 wait for clock_period;
-
-
 	 
-      --wait;
+
+-- test for EX hazard for operand A and B
+			ex_mem_regWrite <= '1';
+         ex_mem_registerRd <= "00010";
+         mem_wb_regWrite <= '1' ;
+         mem_wb_registerRd <= "00001";
+         id_ex_registerRs <= "00001";
+         id_ex_registerRt <= "00001";
+			--check(fordward_a = 	"00", "fordward_a result incorrect!");
+			--check(fordward_b = 	"00", "fordward_b result incorrect!");
+			
+	 report "Test 3 passed";
+	 
+	 wait for clock_period;
+	 
+      wait;
    end process;
 
 END;
