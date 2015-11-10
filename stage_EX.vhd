@@ -162,7 +162,7 @@ MIPSalu : entity work.alu(Behavioral)
 			  add_result => pc_imm_offcet,
            zero => alu_zero,
            alu_result => alu_result,
-           operand_b => in_reg_b,
+           operand_b => fwd_operandb_mul,
            write_reg => write_reg,
 			  mem_to_reg_control => in_mem_to_reg_control,
 			  -- out register --------------
@@ -181,27 +181,27 @@ MIPSalu : entity work.alu(Behavioral)
 	-- LAu operands with forwarding implementation
 	
 	-- begin with forwarding
---	fwd_operandb_mul <= 	in_reg_b when (fordward_b = "00") 					else 
---								in_ex_src_fwd_ex_mem when (fordward_b = "10")	else
---								in_ex_src_fwd_mem_wb when (fordward_b = "01") 	else
---								in_reg_b;
---	
---	operand_B <= fwd_operandb_mul when (in_alu_src_control = '0') else 
---					 in_immediate;
---					 
---					
---					 
---	operand_A <= in_reg_a when (fordward_a = "00") 					else 
---					 in_ex_src_fwd_ex_mem when (fordward_a = "10")	else
---					 in_ex_src_fwd_mem_wb when (fordward_a = "01") 	else
---					 in_reg_a;
+	fwd_operandb_mul <= 	in_reg_b when (fordward_b = "00") 					else 
+								in_ex_src_fwd_ex_mem when (fordward_b = "10")	else
+								in_ex_src_fwd_mem_wb when (fordward_b = "01") 	else
+								in_reg_b;
+	
+	operand_B <= fwd_operandb_mul when (in_alu_src_control = '0') else 
+					 in_immediate;
+					 
+					
+					 
+	operand_A <= in_reg_a when (fordward_a = "00") 					else 
+					 in_ex_src_fwd_ex_mem when (fordward_a = "10")	else
+					 in_ex_src_fwd_mem_wb when (fordward_a = "01") 	else
+					 in_reg_a;
 	-- end with forwarding
 	
 	-- begin without forwarding
-	 operand_B <= in_reg_b when (in_alu_src_control = '0') else 
-					  in_immediate;
-					  
-	  operand_A <= in_reg_a;
+--	 operand_B <= in_reg_b when (in_alu_src_control = '0') else 
+--					  in_immediate;
+--					  
+--	  operand_A <= in_reg_a;
 	
 	-- end without forwarding
 	
