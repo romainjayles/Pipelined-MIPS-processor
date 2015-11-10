@@ -386,9 +386,8 @@ begin
 	reset_ex_mem <= reset;
 	
 	-- inserting buble
-	stall <= delayed_branch;
+	--stall <= delayed_branch;
 	
-	if_in_pc_enable <= '1';
 	--dmem_write_enable <= processor_enable;
 	--imem_address <= (others => '0');
 	--dmem_address <= std_logic_vector(counterReg(7 downto 0));
