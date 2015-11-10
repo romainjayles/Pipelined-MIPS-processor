@@ -138,7 +138,8 @@ architecture Behavioral of MIPSProcessor is
 	signal reset_ex_mem : std_logic;
 	
 	signal stall_hazard : STD_LOGIC; -- when 1 disable pc clock, IF/ID register clock and assign controll signals 0
-	
+	signal read_reg_1 : std_logic_vector(4 downto 0);
+	signal read_reg_2 : std_logic_vector(4 downto 0);
 begin
 
 	-- instantiate hazard detector
@@ -146,8 +147,8 @@ begin
     port map (
 				memory_read => mem_read,
 				EX_reg_write => out_write_reg, -- destination register of load instruction
-				ID_reg_a => read_data_1,-- operand a of instruction in decode stage
-				ID_reg_b => read_data_2, -- operand b of instruction in decode
+				ID_reg_a => read_reg_1,-- operand a of instruction in decode stage
+				ID_reg_b => read_reg_2, -- operand b of instruction in decode
 			 stall_pipeline => stall_hazard
 	 );
 	 -- instantiate instruction fetch pipeline stage
@@ -287,6 +288,8 @@ begin
 	 destination_R => destination_R,
 	 destination_I => destination_I,
 	 pc_out => pc_out_stage_id,
+	 read_reg_1 => read_reg_1,
+	 read_reg_2 => read_reg_2,
 	 
 	 -- begin forwarding unit
 	 out_id_fwd_rs => out_id_fwd_rs,
