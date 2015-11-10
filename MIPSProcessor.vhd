@@ -367,14 +367,14 @@ begin
 			delayed_branch <= '0';
 		elsif rising_edge(clk) then
 			if processor_enable = '1' then
-				delayed_branch <= wb_out_pc_src_control;
+				delayed_branch <= wb_out_pc_src_control or jump;
 			end if;
 		end if;
 	end process;
 	-- pc source is controled by jump or branch signal
-	pcsrc <= wb_out_pc_src_control or jump;
+	pcsrc <= wb_out_pc_src_control or jump; 
 	-- we compute the jump address
-	jump_address <=  std_logic_vector(signed(reg_if_id_pc_out(31 downto 26)) & signed(reg_if_id_instruction_out(25 downto 0)));
+	jump_address <=  reg_if_id_pc_out(31 downto 26) & reg_if_id_instruction_out(25 downto 0);
 	with jump select
 		pc_branch_address <=
 		out_pc_imm_offcet when '0',
@@ -386,7 +386,7 @@ begin
 	reset_ex_mem <= reset;
 	
 	-- inserting buble
-	stall <= delayed_branch;
+	stall <= delayed_branch or jump;
 	if_in_pc_enable <= '1';
 	--dmem_write_enable <= processor_enable;
 	--imem_address <= (others => '0');

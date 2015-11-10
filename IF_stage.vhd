@@ -84,13 +84,13 @@ begin
 		
 	instruction_out     <= current_instruction;
 	 
-	process(clk, reset, processor_enable, pc_enable, stall_hazard) is
+	process(clk, reset, processor_enable, pc_enable) is
 		begin
 		 if reset = '1' then
 			PC <= x"00000000";
 			-- if the processor is enable, if we are not reseting and if control
 			-- allow it
-		 elsif rising_edge(clk) and processor_enable = '1' and pc_enable = '1' and stall_hazard = '0'  then
+		 elsif rising_edge(clk) and processor_enable = '1' and pc_enable = '1' then
 			-- PC takes the next value
 			PC <= next_PC;
 		 end if;

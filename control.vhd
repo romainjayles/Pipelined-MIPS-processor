@@ -54,8 +54,7 @@ end control;
 		
 	 
 	 
-		opcode <= instruction_in(31 downto 26) when (stall_hazard = '0') else
-					"111111";
+		opcode <= instruction_in(31 downto 26);
 	   
 		process(opcode) is begin
 				regdst <= '0';
