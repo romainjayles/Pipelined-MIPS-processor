@@ -40,6 +40,8 @@ Port (
 	 write_data : in std_logic_vector(31 downto 0);
 	 read_data_1 : out std_logic_vector(31 downto 0);
 	 read_data_2 : out std_logic_vector(31 downto 0);
+	 read_reg_1 : out std_logic_vector(4 downto 0);
+	 read_reg_2 : out std_logic_vector(4 downto 0);
 	 immediate_extended : out std_logic_vector(31 downto 0);
 	 destination_R : out std_logic_vector(4 downto 0);
 	 destination_I : out std_logic_vector(4 downto 0);
@@ -67,6 +69,11 @@ register_file: entity work.general_register(Behavioral) port map(
 		read_data_1 => read_data_1,
 		read_data_2 => read_data_2
 		);
+		
+		read_reg_1 <= instruction_in(25 downto 21);
+		read_reg_2 <= instruction_in(20 downto 16);
+		
+		
 		
 		immediate_extended(15 downto 0) <= instruction_in(15 downto 0);
 		immediate_extended(31 downto 16) <= (31 downto 16 => instruction_in(15));
