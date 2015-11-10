@@ -147,7 +147,7 @@ begin
 			clk => clk,
 			processor_enable => processor_enable,
 			PCsrc	=> pcsrc,			
-			PCbranch	=>	out_pc_imm_offcet,	
+			PCbranch	=>	pc_branch_address,	
 			pc_enable => if_in_pc_enable,  
 			stall => stall,
 			instruction_out => if_out_instruction_out,
@@ -358,7 +358,7 @@ begin
 	-- pc source is controled by jump or branch signal
 	pcsrc <= wb_out_pc_src_control or jump;
 	-- we compute the jump address
-	jump_address <=  reg_if_id_instruction_out(25 downto 0) & reg_if_id_pc_out(31 downto 26);
+	jump_address <=  std_logic_vector(signed(reg_if_id_pc_out(31 downto 26)) & signed(reg_if_id_instruction_out(25 downto 0)));
 	with jump select
 		pc_branch_address <=
 		out_pc_imm_offcet when '0',
