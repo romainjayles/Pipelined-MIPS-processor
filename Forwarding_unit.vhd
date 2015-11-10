@@ -63,8 +63,8 @@ begin
 				
 		elsif ((mem_wb_regWrite = '1') -- MEM HAZARD
 			and (mem_wb_registerRd /="00000") 
-			and not(ex_mem_regWrite = '1' and (ex_mem_registerRd /= "00000"))
-			and (ex_mem_registerRd /= id_ex_registerRs)
+			and not(ex_mem_regWrite = '1' and (ex_mem_registerRd /= "00000")
+				and (ex_mem_registerRd = id_ex_registerRs))
 			and (mem_wb_registerRd = id_ex_registerRs)) then
 				fordward_a <= b"01"; 
 		else 
@@ -79,11 +79,11 @@ begin
 				
 		elsif ((mem_wb_regWrite = '1') -- MEM HAZARD
 			and (mem_wb_registerRd /="00000") 
-			and not(ex_mem_regWrite = '1' and (ex_mem_registerRd /= "00000"))
-			and (ex_mem_registerRd /= id_ex_registerRt)
+				and not(ex_mem_regWrite = '1' and (ex_mem_registerRd /= "00000")
+				and (ex_mem_registerRd = id_ex_registerRt))
 			and (mem_wb_registerRd = id_ex_registerRt)) then
 				fordward_b <= b"01"; 
-				
+		
 		else 
 			fordward_b <= b"00";
 		end if;
