@@ -96,7 +96,7 @@ begin
 			  
 			  -- begin forwarding unit
 			  out_id_ex_fwd_rs <= in_id_ex_fwd_rs;
-			  out_id_ex_fwd_rt <= in_id_ex_fwd_rs;
+			  out_id_ex_fwd_rt <= in_id_ex_fwd_rt;
 			  -- end forwarding unit
 			  
 			  
