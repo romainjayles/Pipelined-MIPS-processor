@@ -47,7 +47,7 @@ architecture Behavioral of IF_ID_register is
 
 begin
 
-process(clk, reset)
+process(clk, reset, disable_clock)
 	begin
 		if reset = '1' then
 			pc_out <= (others => '0');

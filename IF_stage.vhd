@@ -84,7 +84,7 @@ begin
 		
 	instruction_out     <= current_instruction;
 	 
-	process(clk, reset, processor_enable, pc_enable) is
+	process(clk, reset, processor_enable, pc_enable, stall_hazard) is
 		begin
 		 if reset = '1' then
 			PC <= x"00000000";
