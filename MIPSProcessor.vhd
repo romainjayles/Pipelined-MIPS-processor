@@ -137,14 +137,26 @@ architecture Behavioral of MIPSProcessor is
 	signal reset_id_ex : std_logic;
 	signal reset_ex_mem : std_logic;
 	
-	
+	signal stall_hazard : STD_LOGIC; -- when 1 disable pc clock, IF/ID register clock and assign controll signals 0
+	signal read_reg_1 : std_logic_vector(4 downto 0);
+	signal read_reg_2 : std_logic_vector(4 downto 0);
 begin
 
+	-- instantiate hazard detector
+	MIPShazard_detector : entity work.hazard_detector(Behavioral)
+    port map (
+				memory_read => mem_read,
+				EX_reg_write => out_write_reg, -- destination register of load instruction
+				ID_reg_a => read_reg_1,-- operand a of instruction in decode stage
+				ID_reg_b => read_reg_2, -- operand b of instruction in decode
+			 stall_pipeline => stall_hazard
+	 );
 	 -- instantiate instruction fetch pipeline stage
 	MIPSstage_if : entity work.IF_stage(Behavioral)
     port map (
 			reset => reset,
 			clk => clk,
+			stall_hazard => stall_hazard,
 			processor_enable => processor_enable,
 			PCsrc	=> pcsrc,			
 			PCbranch	=>	pc_branch_address,	
@@ -165,7 +177,8 @@ begin
 			instruction_in => if_out_instruction_out,
 			pc_in => if_out_pc,
 			instruction_out  => reg_if_id_instruction_out,
-			pc_out  => reg_if_id_pc_out
+			pc_out  => reg_if_id_pc_out,
+			disable_clock => stall_hazard
 
 	);
 	
@@ -275,6 +288,8 @@ begin
 	 destination_R => destination_R,
 	 destination_I => destination_I,
 	 pc_out => pc_out_stage_id,
+	 read_reg_1 => read_reg_1,
+	 read_reg_2 => read_reg_2,
 	 
 	 -- begin forwarding unit
 	 out_id_fwd_rs => out_id_fwd_rs,
@@ -287,6 +302,7 @@ begin
 	instruction_in => reg_if_id_instruction_out,
     regdst => regdst,
     branch => branch,
+	 stall_hazard => stall_hazard,
     mem_read => mem_read,
     mem_to_reg => mem_to_reg,
     alu_op => alu_op,
@@ -370,9 +386,8 @@ begin
 	reset_ex_mem <= reset;
 	
 	-- inserting buble
-	stall <= delayed_branch;
+	--stall <= delayed_branch;
 	
-	if_in_pc_enable <= '1';
 	--dmem_write_enable <= processor_enable;
 	--imem_address <= (others => '0');
 	--dmem_address <= std_logic_vector(counterReg(7 downto 0));

@@ -33,6 +33,7 @@ entity IF_ID_register is
     Port ( 
 			  reset : in STD_LOGIC;
 			  clk : in STD_LOGIC;
+			  disable_clock : in STD_LOGIC;
 			  -- in register --------------
 			  pc_in : in STD_LOGIC_VECTOR(31 downto 0);
            instruction_in : in STD_LOGIC_VECTOR(31 downto 0);
@@ -46,12 +47,12 @@ architecture Behavioral of IF_ID_register is
 
 begin
 
-process(clk, reset)
+process(clk, reset, disable_clock)
 	begin
 		if reset = '1' then
 			pc_out <= (others => '0');
 			instruction_out <= (others => '0');
-		elsif rising_edge(clk) then
+		elsif rising_edge(clk) and (disable_clock = '0') then
 			pc_out <= pc_in;
 			instruction_out <= instruction_in;
 		end if;
