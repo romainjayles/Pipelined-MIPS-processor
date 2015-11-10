@@ -52,12 +52,8 @@ end control;
 		
     begin
 		
-	 
-	 
-		opcode <= instruction_in(31 downto 26) when (stall_hazard = '0') else
-					"111111";
-	   
-		process(opcode) is begin
+		opcode <= instruction_in(31 downto 26);
+		process(opcode, stall_hazard) is begin
 				regdst <= '0';
 				branch <= '0';
 				mem_read <= '0';
@@ -89,7 +85,7 @@ end control;
 				mem_to_reg <= '1';
 				alu_src <= '1';
 				alu_op <= "11";
-			elsif opcode = "111111" then -- hazard, insert NOP
+			elsif stall_hazard = '1' then -- hazard, insert NOP
 				regdst <= '0';
 				branch <= '0';
 				mem_read <= '0';
