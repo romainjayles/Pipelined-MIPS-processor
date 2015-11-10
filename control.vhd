@@ -32,6 +32,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity control is
   port(
     instruction_in : in std_logic_vector(31 downto 0);
+	 stall_hazard : in std_logic;
     regdst : out std_logic;
     branch : out std_logic;
     mem_read : out std_logic;
@@ -53,7 +54,8 @@ end control;
 		
 	 
 	 
-		opcode <= instruction_in(31 downto 26);
+		opcode <= instruction_in(31 downto 26) when (stall_hazard = '0') else
+					"111111";
 	   
 		process(opcode) is begin
 				regdst <= '0';
@@ -87,6 +89,16 @@ end control;
 				mem_to_reg <= '1';
 				alu_src <= '1';
 				alu_op <= "11";
+			elsif opcode = "111111" then -- hazard, insert NOP
+				regdst <= '0';
+				branch <= '0';
+				mem_read <= '0';
+				mem_to_reg <= '0';
+				alu_op <= "00";
+				mem_write <= '0';
+				alu_src <= '0';
+				reg_write <= '0';
+				jump <= '0';
 			end if;
 		
 		end process;

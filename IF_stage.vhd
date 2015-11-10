@@ -36,6 +36,7 @@ entity IF_stage is
 Port ( 
 	 reset : in STD_LOGIC;
 	 clk : in STD_LOGIC;
+	 stall_hazard : in STD_LOGIC;
 	 processor_enable : in  std_logic;
 	 PCsrc				: in	std_logic;
 	 PCbranch			: in	std_logic_vector(31 downto 0);
@@ -89,7 +90,7 @@ begin
 			PC <= x"00000000";
 			-- if the processor is enable, if we are not reseting and if control
 			-- allow it
-		 elsif rising_edge(clk) and processor_enable = '1' and pc_enable = '1'  then
+		 elsif rising_edge(clk) and processor_enable = '1' and pc_enable = '1' and stall_hazard = '0'  then
 			-- PC takes the next value
 			PC <= next_PC;
 		 end if;
