@@ -56,7 +56,8 @@ Port (
 end stage_ID;
 
 architecture Behavioral of stage_ID is
-    
+	signal fwd_data_1 : std_logic_vector(31 downto 0);
+   signal fwd_data_2 : std_logic_vector(31 downto 0);
 begin
 register_file: entity work.general_register(Behavioral) port map(
 		clk => clk,
@@ -66,8 +67,8 @@ register_file: entity work.general_register(Behavioral) port map(
 		read_reg_2 => instruction_in(20 downto 16),
 		write_register => write_register,
 		write_data => write_data,
-		read_data_1 => read_data_1,
-		read_data_2 => read_data_2
+		read_data_1 => fwd_data_1,
+		read_data_2 => fwd_data_2
 		);
 		
 		read_reg_1 <= instruction_in(25 downto 21);
@@ -85,6 +86,12 @@ register_file: entity work.general_register(Behavioral) port map(
 		out_id_fwd_rs <= instruction_in(25 downto 21);
 		out_id_fwd_rt <= instruction_in(20 downto 16);
 	-- end forwarding unit
+		
+		
+		read_data_1 <= write_data when instruction_in(25 downto 21) = write_register else
+		fwd_data_1;
+		read_data_2 <= write_data when instruction_in(20 downto 16) = write_register else
+		fwd_data_2;
 	 
 end;
 	 

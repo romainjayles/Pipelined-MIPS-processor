@@ -56,6 +56,7 @@ architecture Behavioral of IF_stage is
   signal PC                  : std_logic_vector(31 downto 0) := x"00000000";
   -- The Value of PC which will be updated
   signal next_PC             : std_logic_vector(31 downto 0);
+  signal stall_PC             : std_logic_vector(31 downto 0);
   -- PC +1
   signal increment_PC        : std_logic_vector(31 downto 0);
 
@@ -63,7 +64,8 @@ architecture Behavioral of IF_stage is
 
 begin
 	
-	pc_out <= PC;
+	pc_out <= PC when stall_hazard = '0' else
+	stall_PC;
 
 -- The mux
   with PCsrc select
@@ -73,8 +75,8 @@ begin
 
 	-- PC 
 	 increment_PC        <= std_logic_vector(unsigned(PC) + 1);  -- PC +1
-	imem_address        <= PC(7 downto 0);            -- The address of the instruction will
-													  -- be in PC
+	imem_address        <= PC(7 downto 0) when stall_hazard = '0' else
+	stall_PC(7 downto 0);
 	
 	-- instruction --
 	with stall select
@@ -84,15 +86,17 @@ begin
 		
 	instruction_out     <= current_instruction;
 	 
-	process(clk, reset, processor_enable, pc_enable) is
+	process(clk, reset, processor_enable, pc_enable, stall_hazard) is
 		begin
 		 if reset = '1' then
 			PC <= x"00000000";
 			-- if the processor is enable, if we are not reseting and if control
 			-- allow it
-		 elsif rising_edge(clk) and processor_enable = '1' and pc_enable = '1' then
+		 elsif rising_edge(clk) and processor_enable = '1' and pc_enable = '1' and stall_hazard='0' then
 			-- PC takes the next value
 			PC <= next_PC;
+			stall_PC <= std_logic_vector(signed(next_PC) -1);
+		
 		 end if;
   end process;
   

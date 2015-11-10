@@ -140,12 +140,27 @@ architecture Behavioral of MIPSProcessor is
 	signal stall_hazard : STD_LOGIC; -- when 1 disable pc clock, IF/ID register clock and assign controll signals 0
 	signal read_reg_1 : std_logic_vector(4 downto 0);
 	signal read_reg_2 : std_logic_vector(4 downto 0);
+	
+	--used in the multiplexor
+	
+	signal mux_regdst : std_logic;
+   signal mux_branch : std_logic;
+   signal mux_mem_read : std_logic;
+   signal mux_mem_to_reg : std_logic;
+   signal mux_alu_op : std_logic_vector(1 downto 0);
+   signal mux_mem_write : std_logic;
+   signal mux_alu_src : std_logic;
+   signal mux_reg_write : std_logic;
+	signal mux_jump : std_logic;
+	signal mux_destination_R :  std_logic_vector(4 downto 0);
+	signal mux_destination_I :  std_logic_vector(4 downto 0);
+	
 begin
 
 	-- instantiate hazard detector
 	MIPShazard_detector : entity work.hazard_detector(Behavioral)
     port map (
-				memory_read => mem_read,
+				memory_read => in_mem_read_control,
 				EX_reg_write => out_write_reg, -- destination register of load instruction
 				ID_reg_a => read_reg_1,-- operand a of instruction in decode stage
 				ID_reg_b => read_reg_2, -- operand b of instruction in decode
@@ -302,7 +317,7 @@ begin
 	instruction_in => reg_if_id_instruction_out,
     regdst => regdst,
     branch => branch,
-	 stall_hazard => stall_hazard,
+	 --stall_hazard => stall_hazard,
     mem_read => mem_read,
     mem_to_reg => mem_to_reg,
     alu_op => alu_op,
@@ -311,6 +326,8 @@ begin
     reg_write => reg_write,
 	 jump => jump
 	 );
+	 
+	 
 	 
 	 MIPSid_ex : entity work.id_ex(Behavioral)
    port map (
@@ -371,6 +388,37 @@ begin
 			end if;
 		end if;
 	end process;
+	
+	mux_process: process(stall_hazard)
+	begin
+	if stall_hazard='0' then
+	 mux_regdst <= regdst;
+    mux_branch <= branch;
+    mux_mem_read <= mem_read;
+    mux_mem_to_reg <= mem_to_reg;
+    mux_alu_op <= alu_op;
+    mux_mem_write <= mem_write;
+    mux_alu_src <= alu_src;
+    mux_reg_write <= reg_write;
+	 mux_jump <= jump;
+	 mux_destination_R <= destination_R;
+	 mux_destination_I <= destination_I;
+	else
+	 mux_regdst <= '0';
+    mux_branch <= '0';
+    mux_mem_read <= '0';
+    mux_mem_to_reg <= '0';
+    mux_alu_op <= "00";
+    mux_mem_write <= '0';
+    mux_alu_src <= '0';
+    mux_reg_write <= '0';
+	 mux_jump <= '0';
+	 mux_destination_R <= destination_R;
+	 mux_destination_I <= destination_I;
+	 end if;
+	end process;
+
+	
 	-- pc source is controled by jump or branch signal
 	pcsrc <= wb_out_pc_src_control or jump; 
 	-- we compute the jump address

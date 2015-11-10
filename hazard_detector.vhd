@@ -42,7 +42,12 @@ architecture Behavioral of hazard_detector is
 		
 
 begin
-	stall_pipeline <= '1' when (memory_read = '1' and (EX_reg_write = ID_reg_a or EX_reg_write = ID_reg_b)) else '0';
+	stall_pipeline <= '1' when 
+	((EX_reg_write = ID_reg_a) or (EX_reg_write = ID_reg_b))
+	and (EX_reg_write /= "00000")
+	and (memory_read = '1')
+	
+	else '0';
 	
 end Behavioral;
 
