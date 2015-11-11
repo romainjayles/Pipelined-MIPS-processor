@@ -92,8 +92,8 @@ begin
 			PC <= x"00000000";
 			-- if the processor is enable, if we are not reseting and if control
 			-- allow it
-		 --elsif rising_edge(processor_enable) then
-			--PC <= x"00000000";
+		 elsif rising_edge(processor_enable) then
+			PC <= x"00000001";
 			
 		 elsif rising_edge(clk) and processor_enable = '1' and pc_enable = '1' and stall_hazard='0' then
 			-- PC takes the next value
