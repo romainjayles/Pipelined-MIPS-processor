@@ -154,9 +154,22 @@ architecture Behavioral of MIPSProcessor is
 	signal mux_jump : std_logic;
 	signal mux_destination_R :  std_logic_vector(4 downto 0);
 	signal mux_destination_I :  std_logic_vector(4 downto 0);
-	
+	signal in_delayed_processor_enable : std_logic;
+	signal in2_delayed_processor_enable : std_logic;
+	signal out_delayed_processor_enable : std_logic;
 begin
-
+	
+	process(clk, reset)
+	begin
+		if reset = '1' then
+			in_delayed_processor_enable <= '0';
+		elsif rising_edge(clk) then
+			in_delayed_processor_enable <= processor_enable;
+			in2_delayed_processor_enable <= in_delayed_processor_enable;
+			out_delayed_processor_enable <= in_delayed_processor_enable;
+		end if;
+	end process;
+	
 	-- instantiate hazard detector
 	MIPShazard_detector : entity work.hazard_detector(Behavioral)
     port map (
@@ -172,7 +185,7 @@ begin
 			reset => reset,
 			clk => clk,
 			stall_hazard => stall_hazard,
-			processor_enable => processor_enable,
+			processor_enable => out_delayed_processor_enable,
 			PCsrc	=> pcsrc,			
 			PCbranch	=>	pc_branch_address,	
 			pc_enable => if_in_pc_enable,  
@@ -383,13 +396,13 @@ begin
 		if reset = '1' then
 			delayed_branch <= '0';
 		elsif rising_edge(clk) then
-			if processor_enable = '1' then
+			if out_delayed_processor_enable = '1' then
 				delayed_branch <= wb_out_pc_src_control or jump;
 			end if;
 		end if;
 	end process;
 	
-	mux_process: process(stall_hazard)
+	mux_process: process(stall_hazard, regdst, branch, mem_read, mem_to_reg, alu_op, mem_write,alu_src, reg_write, jump, destination_R, destination_I)
 	begin
 	if stall_hazard='0' then
 	 mux_regdst <= regdst;
@@ -429,7 +442,7 @@ begin
 		jump_address when '1';
 		
 	-- Flushing of signals 
-	reset_if_id <= reset or wb_out_pc_src_control or not processor_enable;
+	reset_if_id <= reset or wb_out_pc_src_control or not out_delayed_processor_enable;
 	reset_id_ex <= reset or wb_out_pc_src_control;
 	reset_ex_mem <= reset;
 	

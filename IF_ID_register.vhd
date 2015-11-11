@@ -47,12 +47,12 @@ architecture Behavioral of IF_ID_register is
 
 begin
 
-process(clk, reset)
+process(clk, reset, disable_clock)
 	begin
 		if reset = '1' then
 			pc_out <= (others => '0');
 			instruction_out <= (others => '0');
-		elsif rising_edge(clk) then
+		elsif rising_edge(clk) and disable_clock='0' then
 			pc_out <= pc_in;
 			instruction_out <= instruction_in;
 		end if;
