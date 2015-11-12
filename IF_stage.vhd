@@ -56,6 +56,7 @@ architecture Behavioral of IF_stage is
   signal PC                  : std_logic_vector(31 downto 0) := x"00000000";
   -- The Value of PC which will be updated
   signal next_PC             : std_logic_vector(31 downto 0);
+  -- PC -1
   signal stall_PC             : std_logic_vector(31 downto 0);
   -- PC +1
   signal increment_PC        : std_logic_vector(31 downto 0);
@@ -63,11 +64,11 @@ architecture Behavioral of IF_stage is
 	signal current_instruction : std_logic_vector(31 downto 0);
 
 begin
-	
+	-- When the Processor is stalled, we use stall_PC to querry the Instruction memory
 	pc_out <= PC when stall_hazard = '0' else
 	stall_PC;
 
--- The mux
+	-- The mux used by branch and jump
   with PCsrc select
 	next_PC <=
 	increment_PC when '0',

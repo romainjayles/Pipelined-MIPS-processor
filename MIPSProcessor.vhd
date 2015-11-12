@@ -151,11 +151,7 @@ architecture Behavioral of MIPSProcessor is
    signal mux_mem_write : std_logic;
    signal mux_alu_src : std_logic;
    signal mux_reg_write : std_logic;
-	signal mux_jump : std_logic;
-	signal mux_destination_R :  std_logic_vector(4 downto 0);
-	signal mux_destination_I :  std_logic_vector(4 downto 0);
 	signal in_delayed_processor_enable : std_logic;
-	signal in2_delayed_processor_enable : std_logic;
 	signal out_delayed_processor_enable : std_logic;
 begin
 	
@@ -165,7 +161,6 @@ begin
 			in_delayed_processor_enable <= '0';
 		elsif rising_edge(clk) then
 			in_delayed_processor_enable <= processor_enable;
-			in2_delayed_processor_enable <= in_delayed_processor_enable;
 			out_delayed_processor_enable <= in_delayed_processor_enable;
 		end if;
 	end process;
@@ -346,14 +341,14 @@ begin
    port map (
 		reset => reset_id_ex,
 		clk => clk,
-		regdst => regdst,
-		branch => branch,
-		mem_read => mem_read,
-		mem_to_reg => mem_to_reg,
-		alu_op => alu_op,
-		mem_write => mem_write,
-		alu_src => alu_src,
-		reg_write => reg_write,
+		regdst => mux_regdst,
+		branch => mux_branch,
+		mem_read => mux_mem_read,
+		mem_to_reg => mux_mem_to_reg,
+		alu_op => mux_alu_op,
+		mem_write => mux_mem_write,
+		alu_src => mux_alu_src,
+		reg_write => mux_reg_write,
 		read_data_1 => read_data_1,
 		read_data_2 => read_data_2,
 		immediate_extended => immediate_extended,
@@ -402,7 +397,8 @@ begin
 		end if;
 	end process;
 	
-	mux_process: process(stall_hazard, regdst, branch, mem_read, mem_to_reg, alu_op, mem_write,alu_src, reg_write, jump, destination_R, destination_I)
+	-- Mux used for when stall is enable and we want to fill the ID/EX register with the following informations
+	mux_process: process(stall_hazard, regdst, branch, mem_read, mem_to_reg, alu_op, mem_write,alu_src, reg_write, jump)
 	begin
 	if stall_hazard='0' then
 	 mux_regdst <= regdst;
@@ -413,9 +409,6 @@ begin
     mux_mem_write <= mem_write;
     mux_alu_src <= alu_src;
     mux_reg_write <= reg_write;
-	 mux_jump <= jump;
-	 mux_destination_R <= destination_R;
-	 mux_destination_I <= destination_I;
 	else
 	 mux_regdst <= '0';
     mux_branch <= '0';
@@ -425,9 +418,6 @@ begin
     mux_mem_write <= '0';
     mux_alu_src <= '0';
     mux_reg_write <= '0';
-	 mux_jump <= '0';
-	 mux_destination_R <= destination_R;
-	 mux_destination_I <= destination_I;
 	 end if;
 	end process;
 
@@ -448,11 +438,9 @@ begin
 	
 	-- inserting buble
 	stall <= delayed_branch or jump;
+	
+	-- always enable
 	if_in_pc_enable <= '1';
-	--dmem_write_enable <= processor_enable;
-	--imem_address <= (others => '0');
-	--dmem_address <= std_logic_vector(counterReg(7 downto 0));
-	--dmem_data_out <= std_logic_vector(counterReg);
 
 end Behavioral;
 
