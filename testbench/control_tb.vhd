@@ -73,7 +73,7 @@ BEGIN
 	 -- in load_execution state
 	 check(regdst = 	'0', 	"regdst result incorrect!");
 	 check(alu_src = 	'1', 	"alu_src result incorrect!");
-	 check(mem_to_reg = '1', 	"mem_to_reg result incorrect!");
+	 check(mem_to_reg = '0', 	"mem_to_reg result incorrect!");
 	 check(reg_write = '1', 	"reg_write result incorrect!");
 	 check(mem_read = 	'1', 	"mem_read result incorrect!");
 	 check(mem_write = '0', 	"mem_write result incorrect!");
@@ -102,7 +102,7 @@ BEGIN
 	 -- in R_execution
 	 check(regdst = 	'1', 	"regdst result incorrect!");
 	 check(alu_src = 	'0', 	"alu_src result incorrect!");
-	 check(mem_to_reg = '0', 	"mem_to_reg result incorrect!");
+	 check(mem_to_reg = '1', 	"mem_to_reg result incorrect!");
 	 check(reg_write = '1', 	"reg_write result incorrect!");
 	 check(mem_read = 	'0', 	"mem_read result incorrect!");
 	 check(mem_write = '0', 	"mem_write result incorrect!");
@@ -138,7 +138,6 @@ BEGIN
 	 check(mem_read = 	'0', 	"mem_read result incorrect!");
 	 check(mem_write = '0', 	"mem_write result incorrect!");
 	 check(branch = 	'0', 	"branch result incorrect!");
-	 check(alu_op = 	"10", "alu_op result incorrect!");
 	 report "Test 9 passed";
 	 
 	 
